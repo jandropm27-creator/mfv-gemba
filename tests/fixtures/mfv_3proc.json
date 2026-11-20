@@ -1,0 +1,230 @@
+{
+ "id": "tres",
+ "criadoEm": "2026-11-20T10:00:00Z",
+ "atualizadoEm": "2026-11-20T10:00:00Z",
+ "cabecalho": {
+  "cliente": "Padaria São José & Cia \"Teste\" <1>",
+  "produto": "Fios",
+  "data": "2026-11-20",
+  "consultor": "Jandro Medeiros",
+  "unidade": "kg"
+ },
+ "producao": {
+  "demandaMensal": 5000,
+  "diasMes": 20,
+  "dispFamilia": 0.6,
+  "turnos": [
+   {
+    "dias": [
+     true,
+     true,
+     true,
+     true,
+     false,
+     false
+    ],
+    "entrada": "07:30",
+    "pausaM": "00:14",
+    "refeicao": "01:30",
+    "pausaT": "00:00",
+    "saida": "17:00"
+   },
+   {
+    "dias": [
+     false,
+     false,
+     false,
+     false,
+     true,
+     false
+    ],
+    "entrada": "07:30",
+    "pausaM": "00:14",
+    "refeicao": "01:30",
+    "pausaT": "00:00",
+    "saida": "17:00"
+   }
+  ]
+ },
+ "fluxos": {
+  "fornecedor": "Fornecedor Alfa de fibras",
+  "entregaFornecedor": "Terça",
+  "pcpSistema": "",
+  "previsaoFornecedor": "Previsão mensal",
+  "pedidoFornecedor": "WhatsApp semanal",
+  "cliente": "Atacadistas CE",
+  "previsaoCliente": "Previsão 60 dias",
+  "pedidoCliente": "Pedidos semanais",
+  "entregaCliente": "2 x semana",
+  "progProducao": "Programação semanal",
+  "progExpedicao": "Lista diária de entregas"
+ },
+ "processos": [
+  {
+   "id": "p0",
+   "nome": "Mistura & <Sova>",
+   "operadores": 2,
+   "postosParalelo": 1,
+   "qtdPorCiclo": 1,
+   "unidadeCiclo": "kg",
+   "conversao": 1,
+   "disponibilidade": 90,
+   "estoqueAntes": 91,
+   "tarefas": [
+    {
+     "id": "t0",
+     "nome": "Operação",
+     "leituras": [
+      {
+       "seg": 52,
+       "descartada": false,
+       "motivo": "",
+       "confirmada": false,
+       "motivoConfirmacao": ""
+      },
+      {
+       "seg": 54,
+       "descartada": false,
+       "motivo": "",
+       "confirmada": false,
+       "motivoConfirmacao": ""
+      },
+      {
+       "seg": 57,
+       "descartada": false,
+       "motivo": "",
+       "confirmada": false,
+       "motivoConfirmacao": ""
+      }
+     ]
+    }
+   ],
+   "tr": {
+    "modo": "informado",
+    "leituras": [],
+    "valor": 0.19,
+    "unidade": "min"
+   }
+  },
+  {
+   "id": "p1",
+   "nome": "Dobra",
+   "operadores": 3,
+   "postosParalelo": 1,
+   "qtdPorCiclo": 1,
+   "unidadeCiclo": "kg",
+   "conversao": 1,
+   "disponibilidade": 75,
+   "estoqueAntes": 155,
+   "tarefas": [
+    {
+     "id": "t1",
+     "nome": "Operação",
+     "leituras": [
+      {
+       "seg": 69,
+       "descartada": false,
+       "motivo": "",
+       "confirmada": false,
+       "motivoConfirmacao": ""
+      },
+      {
+       "seg": 71,
+       "descartada": false,
+       "motivo": "",
+       "confirmada": false,
+       "motivoConfirmacao": ""
+      },
+      {
+       "seg": 74,
+       "descartada": false,
+       "motivo": "",
+       "confirmada": false,
+       "motivoConfirmacao": ""
+      }
+     ]
+    },
+    {
+     "id": "t1b",
+     "nome": "Pesar \"massa\"",
+     "leituras": [
+      {
+       "seg": 30,
+       "descartada": false,
+       "motivo": "",
+       "confirmada": false,
+       "motivoConfirmacao": ""
+      },
+      {
+       "seg": 31,
+       "descartada": false,
+       "motivo": "",
+       "confirmada": false,
+       "motivoConfirmacao": ""
+      },
+      {
+       "seg": 33,
+       "descartada": false,
+       "motivo": "",
+       "confirmada": false,
+       "motivoConfirmacao": ""
+      }
+     ]
+    }
+   ],
+   "tr": {
+    "modo": "informado",
+    "leituras": [],
+    "valor": 9,
+    "unidade": "min"
+   }
+  },
+  {
+   "id": "p2",
+   "nome": "Solda",
+   "operadores": 4,
+   "postosParalelo": 1,
+   "qtdPorCiclo": 1,
+   "unidadeCiclo": "kg",
+   "conversao": 1,
+   "disponibilidade": 88,
+   "estoqueAntes": 189,
+   "tarefas": [
+    {
+     "id": "t2",
+     "nome": "Operação",
+     "leituras": [
+      {
+       "seg": 73,
+       "descartada": false,
+       "motivo": "",
+       "confirmada": false,
+       "motivoConfirmacao": ""
+      },
+      {
+       "seg": 75,
+       "descartada": false,
+       "motivo": "",
+       "confirmada": false,
+       "motivoConfirmacao": ""
+      },
+      {
+       "seg": 78,
+       "descartada": false,
+       "motivo": "",
+       "confirmada": false,
+       "motivoConfirmacao": ""
+      }
+     ]
+    }
+   ],
+   "tr": {
+    "modo": "nao_aplica",
+    "leituras": [],
+    "valor": null,
+    "unidade": "min"
+   }
+  }
+ ],
+ "estoqueFinal": 65
+}

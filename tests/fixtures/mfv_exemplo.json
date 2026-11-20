@@ -1,0 +1,433 @@
+{
+ "id": "exemplo",
+ "criadoEm": "2026-11-20T10:00:00Z",
+ "atualizadoEm": "2026-11-20T10:00:00Z",
+ "cabecalho": {
+  "cliente": "Indústria Exemplo",
+  "produto": "Fios",
+  "data": "2026-11-20",
+  "consultor": "Jandro Medeiros",
+  "unidade": "kg"
+ },
+ "producao": {
+  "demandaMensal": 5000,
+  "diasMes": 20,
+  "dispFamilia": 0.6,
+  "turnos": [
+   {
+    "dias": [
+     true,
+     true,
+     true,
+     true,
+     false,
+     false
+    ],
+    "entrada": "07:30",
+    "pausaM": "00:14",
+    "refeicao": "01:30",
+    "pausaT": "00:00",
+    "saida": "17:00"
+   },
+   {
+    "dias": [
+     false,
+     false,
+     false,
+     false,
+     true,
+     false
+    ],
+    "entrada": "07:30",
+    "pausaM": "00:14",
+    "refeicao": "01:30",
+    "pausaT": "00:00",
+    "saida": "17:00"
+   }
+  ]
+ },
+ "fluxos": {
+  "fornecedor": "Fornecedor Alfa de fibras",
+  "entregaFornecedor": "Terça",
+  "pcpSistema": "Planilha",
+  "previsaoFornecedor": "Previsão mensal",
+  "pedidoFornecedor": "WhatsApp semanal",
+  "cliente": "Atacadistas CE",
+  "previsaoCliente": "Previsão 60 dias",
+  "pedidoCliente": "Pedidos semanais",
+  "entregaCliente": "2 x semana",
+  "progProducao": "Programação semanal",
+  "progExpedicao": "Lista diária de entregas"
+ },
+ "processos": [
+  {
+   "id": "p0",
+   "nome": "Corte",
+   "operadores": 2,
+   "postosParalelo": 1,
+   "qtdPorCiclo": 1,
+   "unidadeCiclo": "kg",
+   "conversao": 1,
+   "disponibilidade": 90,
+   "estoqueAntes": 91,
+   "tarefas": [
+    {
+     "id": "t0",
+     "nome": "Operação",
+     "leituras": [
+      {
+       "seg": 52,
+       "descartada": false,
+       "motivo": "",
+       "confirmada": false,
+       "motivoConfirmacao": ""
+      },
+      {
+       "seg": 54,
+       "descartada": false,
+       "motivo": "",
+       "confirmada": false,
+       "motivoConfirmacao": ""
+      },
+      {
+       "seg": 57,
+       "descartada": false,
+       "motivo": "",
+       "confirmada": false,
+       "motivoConfirmacao": ""
+      }
+     ]
+    }
+   ],
+   "tr": {
+    "modo": "informado",
+    "leituras": [],
+    "valor": 0.19,
+    "unidade": "min"
+   }
+  },
+  {
+   "id": "p1",
+   "nome": "Dobra",
+   "operadores": 3,
+   "postosParalelo": 1,
+   "qtdPorCiclo": 1,
+   "unidadeCiclo": "kg",
+   "conversao": 1,
+   "disponibilidade": 75,
+   "estoqueAntes": 155,
+   "tarefas": [
+    {
+     "id": "t1",
+     "nome": "Operação",
+     "leituras": [
+      {
+       "seg": 69,
+       "descartada": false,
+       "motivo": "",
+       "confirmada": false,
+       "motivoConfirmacao": ""
+      },
+      {
+       "seg": 71,
+       "descartada": false,
+       "motivo": "",
+       "confirmada": false,
+       "motivoConfirmacao": ""
+      },
+      {
+       "seg": 74,
+       "descartada": false,
+       "motivo": "",
+       "confirmada": false,
+       "motivoConfirmacao": ""
+      }
+     ]
+    }
+   ],
+   "tr": {
+    "modo": "informado",
+    "leituras": [],
+    "valor": 9,
+    "unidade": "min"
+   }
+  },
+  {
+   "id": "p2",
+   "nome": "Solda",
+   "operadores": 4,
+   "postosParalelo": 1,
+   "qtdPorCiclo": 1,
+   "unidadeCiclo": "kg",
+   "conversao": 1,
+   "disponibilidade": 88,
+   "estoqueAntes": 189,
+   "tarefas": [
+    {
+     "id": "t2",
+     "nome": "Operação",
+     "leituras": [
+      {
+       "seg": 73,
+       "descartada": false,
+       "motivo": "",
+       "confirmada": false,
+       "motivoConfirmacao": ""
+      },
+      {
+       "seg": 75,
+       "descartada": false,
+       "motivo": "",
+       "confirmada": false,
+       "motivoConfirmacao": ""
+      },
+      {
+       "seg": 78,
+       "descartada": false,
+       "motivo": "",
+       "confirmada": false,
+       "motivoConfirmacao": ""
+      }
+     ]
+    }
+   ],
+   "tr": {
+    "modo": "informado",
+    "leituras": [],
+    "valor": 19.8,
+    "unidade": "min"
+   }
+  },
+  {
+   "id": "p3",
+   "nome": "Usinagem",
+   "operadores": 3,
+   "postosParalelo": 1,
+   "qtdPorCiclo": 1,
+   "unidadeCiclo": "kg",
+   "conversao": 1,
+   "disponibilidade": 68,
+   "estoqueAntes": 95,
+   "tarefas": [
+    {
+     "id": "t3",
+     "nome": "Operação",
+     "leituras": [
+      {
+       "seg": 61,
+       "descartada": false,
+       "motivo": "",
+       "confirmada": false,
+       "motivoConfirmacao": ""
+      },
+      {
+       "seg": 63,
+       "descartada": false,
+       "motivo": "",
+       "confirmada": false,
+       "motivoConfirmacao": ""
+      },
+      {
+       "seg": 66,
+       "descartada": false,
+       "motivo": "",
+       "confirmada": false,
+       "motivoConfirmacao": ""
+      }
+     ]
+    }
+   ],
+   "tr": {
+    "modo": "informado",
+    "leituras": [],
+    "valor": 0.87,
+    "unidade": "min"
+   }
+  },
+  {
+   "id": "p4",
+   "nome": "Montagem",
+   "operadores": 4,
+   "postosParalelo": 1,
+   "qtdPorCiclo": 1,
+   "unidadeCiclo": "kg",
+   "conversao": 1,
+   "disponibilidade": 80,
+   "estoqueAntes": 111,
+   "tarefas": [
+    {
+     "id": "t4",
+     "nome": "Operação",
+     "leituras": [
+      {
+       "seg": 55.5,
+       "descartada": false,
+       "motivo": "",
+       "confirmada": false,
+       "motivoConfirmacao": ""
+      },
+      {
+       "seg": 57.5,
+       "descartada": false,
+       "motivo": "",
+       "confirmada": false,
+       "motivoConfirmacao": ""
+      },
+      {
+       "seg": 60.5,
+       "descartada": false,
+       "motivo": "",
+       "confirmada": false,
+       "motivoConfirmacao": ""
+      }
+     ]
+    }
+   ],
+   "tr": {
+    "modo": "informado",
+    "leituras": [],
+    "valor": 0.5,
+    "unidade": "min"
+   }
+  },
+  {
+   "id": "p5",
+   "nome": "Pintura",
+   "operadores": 2,
+   "postosParalelo": 1,
+   "qtdPorCiclo": 1,
+   "unidadeCiclo": "kg",
+   "conversao": 1,
+   "disponibilidade": 82,
+   "estoqueAntes": 76,
+   "tarefas": [
+    {
+     "id": "t5",
+     "nome": "Operação",
+     "leituras": [
+      {
+       "seg": 57,
+       "descartada": false,
+       "motivo": "",
+       "confirmada": false,
+       "motivoConfirmacao": ""
+      },
+      {
+       "seg": 59,
+       "descartada": false,
+       "motivo": "",
+       "confirmada": false,
+       "motivoConfirmacao": ""
+      },
+      {
+       "seg": 62,
+       "descartada": false,
+       "motivo": "",
+       "confirmada": false,
+       "motivoConfirmacao": ""
+      }
+     ]
+    }
+   ],
+   "tr": {
+    "modo": "informado",
+    "leituras": [],
+    "valor": 1,
+    "unidade": "min"
+   }
+  },
+  {
+   "id": "p6",
+   "nome": "Inspeção",
+   "operadores": 3,
+   "postosParalelo": 1,
+   "qtdPorCiclo": 1,
+   "unidadeCiclo": "kg",
+   "conversao": 1,
+   "disponibilidade": 77,
+   "estoqueAntes": 99,
+   "tarefas": [
+    {
+     "id": "t6",
+     "nome": "Operação",
+     "leituras": [
+      {
+       "seg": 65,
+       "descartada": false,
+       "motivo": "",
+       "confirmada": false,
+       "motivoConfirmacao": ""
+      },
+      {
+       "seg": 67,
+       "descartada": false,
+       "motivo": "",
+       "confirmada": false,
+       "motivoConfirmacao": ""
+      },
+      {
+       "seg": 70,
+       "descartada": false,
+       "motivo": "",
+       "confirmada": false,
+       "motivoConfirmacao": ""
+      }
+     ]
+    }
+   ],
+   "tr": {
+    "modo": "informado",
+    "leituras": [],
+    "valor": 13.8,
+    "unidade": "min"
+   }
+  },
+  {
+   "id": "p7",
+   "nome": "Embalagem",
+   "operadores": 2,
+   "postosParalelo": 1,
+   "qtdPorCiclo": 1,
+   "unidadeCiclo": "kg",
+   "conversao": 1,
+   "disponibilidade": 100,
+   "estoqueAntes": 83,
+   "tarefas": [
+    {
+     "id": "t7",
+     "nome": "Operação",
+     "leituras": [
+      {
+       "seg": 64,
+       "descartada": false,
+       "motivo": "",
+       "confirmada": false,
+       "motivoConfirmacao": ""
+      },
+      {
+       "seg": 66,
+       "descartada": false,
+       "motivo": "",
+       "confirmada": false,
+       "motivoConfirmacao": ""
+      },
+      {
+       "seg": 69,
+       "descartada": false,
+       "motivo": "",
+       "confirmada": false,
+       "motivoConfirmacao": ""
+      }
+     ]
+    }
+   ],
+   "tr": {
+    "modo": "informado",
+    "leituras": [],
+    "valor": 0.44,
+    "unidade": "min"
+   }
+  }
+ ],
+ "estoqueFinal": 65
+}
