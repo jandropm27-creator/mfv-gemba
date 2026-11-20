@@ -7,5 +7,9 @@
     "test:unit": "node --test 'tests/unit/**/*.test.mjs'",
     "test:e2e": "playwright test --trace off",
     "modelo": "python3 tools/construir_modelo.py modelo/MFV_ME_EPP_original.xlsx app/modelo/"
+  },
+  "devDependencies": {
+    "@xmldom/xmldom": "^0.8.10",
+    "jszip": "^3.10.1"
   }
 }
