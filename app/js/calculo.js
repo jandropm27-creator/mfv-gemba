@@ -34,8 +34,9 @@ export function trMin(p) {
 }
 
 function minutosTurno(t) {
-  return hhmmParaMin(t.saida) - hhmmParaMin(t.entrada)
-    - hhmmParaMin(t.pausaM) - hhmmParaMin(t.refeicao) - hhmmParaMin(t.pausaT);
+  let jornada = hhmmParaMin(t.saida) - hhmmParaMin(t.entrada);
+  if (jornada < 0) jornada += 1440;                 // turno noturno atravessa a meia-noite
+  return jornada - hhmmParaMin(t.pausaM) - hhmmParaMin(t.refeicao) - hhmmParaMin(t.pausaT);
 }
 
 export function horasDia(turnos = []) {

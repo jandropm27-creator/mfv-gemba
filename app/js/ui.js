@@ -33,11 +33,19 @@ export function perguntar(titulo, { texto = '', campoRotulo = '', botoes = [] } 
     ${campoRotulo ? `<label for="dlg-campo">${h(campoRotulo)}</label><input id="dlg-campo">` : ''}
     <div class="linha" style="margin-top:14px">${botoes.map((b, i) => `<button data-i="${i}" class="${b.classe || ''}">${h(b.texto)}</button>`).join('')}</div>`;
   return new Promise((ok) => {
-    dlg.querySelectorAll('button').forEach((b) => b.addEventListener('click', () => {
+    let feito = false;
+    const fim = (botao) => {
+      if (feito) return;
+      feito = true;
       const v = dlg.querySelector('#dlg-campo')?.value || '';
-      dlg.close();
-      ok({ botao: botoes[Number(b.dataset.i)].valor, texto: v });
-    }));
-    dlg.showModal();
+      dlg.oncancel = dlg.onclose = null;
+      if (dlg.open) dlg.close();
+      ok({ botao, texto: v });
+    };
+    dlg.querySelectorAll('button').forEach((b) => b.addEventListener('click', () => fim(botoes[Number(b.dataset.i)].valor)));
+    // Esc ou botão voltar do Android fecham o aviso sem escolher nada.
+    dlg.oncancel = () => fim(null);
+    dlg.onclose = () => fim(null);
+    if (!dlg.open) dlg.showModal();
   });
 }

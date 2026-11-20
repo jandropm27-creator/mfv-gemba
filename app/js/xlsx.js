@@ -138,7 +138,7 @@ function preencherAba(aba, mapa, mfv) {
     const t = pr.turnos[i];
     cel.dias.forEach((ref, d) => aba.texto(ref, t && t.dias[d] ? 'X' : ''));
     for (const [k, campo] of [['entrada', 'entrada'], ['pausa_m', 'pausaM'], ['refeicao', 'refeicao'], ['pausa_t', 'pausaT'], ['saida', 'saida']]) {
-      aba.numero(cel[k], t ? hhmmParaMin(t[campo]) / 1440 : null);
+      aba.numero(cel[k], t && t[campo] ? hhmmParaMin(t[campo]) / 1440 : null);
     }
   });
   mapa.processos.forEach((cel, k) => {

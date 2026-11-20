@@ -58,7 +58,7 @@ class TestModelo(unittest.TestCase):
     def test_unidades_em_minutos(self):
         self.assertEqual(self.recalc["M37"], "min")
         self.assertEqual(self.recalc["AW37"], "min")
-        self.assertEqual(self.recalc["CX52"], "min/unid")
+        self.assertEqual(self.recalc["CX52"], "min/kg")    # unidade do cabeçalho
 
     def test_sem_metadados_pessoais(self):
         core = self.p["docProps/core.xml"].decode("utf-8")
@@ -66,6 +66,21 @@ class TestModelo(unittest.TestCase):
             self.assertNotIn(t, core)
         self.assertNotIn(b"absPath", self.p["xl/workbook.xml"])
         self.assertNotIn(b"Users", self.p["xl/workbook.xml"])
+
+    def test_turno_noturno(self):
+        d = dados_exemplo(self.mapa)
+        t0 = self.mapa["producao"]["turnos"][0]
+        d[t0["entrada"]] = hhmm("22:00"); d[t0["saida"]] = hhmm("06:00")
+        d[t0["pausa_m"]] = hhmm("00:15"); d[t0["refeicao"]] = hhmm("01:00"); d[t0["pausa_t"]] = hhmm("00:15")
+        r = lo_recalc.valores_da_aba(recalcular_partes(preencher(self.p, d)))
+        # O Excel dá #NÚM! em HORA() de duração negativa (o LibreOffice não), então exigimos MOD(…;1):
+        for lin in (48, 49, 50):
+            self.assertTrue(formula(self.p, f"CY{lin}").startswith("=MOD(CX"), f"CY{lin}")
+        # turno 1 (seg–qui) noturno = 6,5 h; turno 2 (sex) = 7,7667 h → média por dia-turno
+        self.assertAlmostEqual(r["DC51"], (4 * 6.5 + 7.7667) / 5, delta=0.001)
+        erros = {k: v for k, v in r.items() if isinstance(v, str) and v.startswith("#")
+                 and not (k[:1] in "ABC" and k[1:].isdigit() and 52 <= int(k[1:]) <= 63)}
+        self.assertEqual(erros, {})
 
     def test_grafico_sem_valores_do_exemplo(self):
         g = self.p[GRAFICO].decode("utf-8")

@@ -54,5 +54,29 @@ export function importarBackup(json) {
   try { d = JSON.parse(json); } catch { throw new Error('Arquivo de backup inválido.'); }
   if (!d || d.versao !== VERSAO_BACKUP) throw new Error(`Backup de versão desconhecida (${d?.versao}).`);
   if (!Array.isArray(d.mfvs)) throw new Error('Arquivo de backup inválido.');
+  d.mfvs.forEach((m, i) => validarMfv(m, i + 1));
   return d.mfvs;
+}
+
+const ehObj = (x) => x !== null && typeof x === 'object' && !Array.isArray(x);
+
+function validarMfv(m, n) {
+  const falha = (campo) => { throw new Error(`Backup inválido: MFV ${n} sem "${campo}" válido.`); };
+  if (!ehObj(m)) falha('dados');
+  if (typeof m.id !== 'string' || !/^[\w-]+$/.test(m.id)) falha('id');
+  if (!ehObj(m.cabecalho)) falha('cabecalho');
+  if (!ehObj(m.producao)) falha('producao');
+  if (!Array.isArray(m.producao.turnos)) falha('producao.turnos');
+  if (!ehObj(m.fluxos)) falha('fluxos');
+  if (!Array.isArray(m.processos)) falha('processos');
+  m.processos.forEach((p, j) => {
+    if (!ehObj(p) || !Array.isArray(p.tarefas)) falha(`processos[${j + 1}].tarefas`);
+    if (!ehObj(p.tr) || !Array.isArray(p.tr.leituras)) falha(`processos[${j + 1}].tr`);
+    p.tarefas.forEach((t, k) => { if (!ehObj(t) || !Array.isArray(t.leituras)) falha(`processos[${j + 1}].tarefas[${k + 1}].leituras`); });
+  });
+}
+
+export function conflitos(existentes, novos) {
+  const ids = new Set(existentes.map((m) => m.id));
+  return novos.filter((m) => ids.has(m.id));
 }

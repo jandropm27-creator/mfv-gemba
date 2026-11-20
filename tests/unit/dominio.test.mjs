@@ -98,3 +98,8 @@ test('máximo de 12 processos', () => {
   while (m.processos.length < 12) m.processos.push({ ...m.processos[0] });
   assert.equal(calc.podeAdicionarProcesso(m), false);
 });
+
+test('turno noturno (22:00 → 06:00) atravessa a meia-noite', () => {
+  const t = { dias: [true, false, false, false, false, false], entrada: '22:00', pausaM: '00:15', refeicao: '01:00', pausaT: '00:15', saida: '06:00' };
+  assert.equal(calc.horasDia([t]), 6.5);
+});

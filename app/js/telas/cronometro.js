@@ -16,8 +16,20 @@ export default function cronometro(el, ctx) {
   if (!alvo) { location.hash = `${ctx.base}/processo/${p.id}`; return; }
   ctx.titulo(ctx.tr ? `T/R · ${p.nome}` : `${alvo.nome} · ${p.nome}`);
 
+  // A leitura em andamento fica em sessionStorage: sair pelo botão voltar do aparelho e voltar retoma o cronômetro.
+  const CHAVE = `crono:${ctx.base}:${p.id}:${ctx.tr ? 'tr' : alvo.id}`;
+  const LEITURA_MINIMA_SEG = 1;
   let inicio = null, timer = null;
-  ctx.aoSair(() => clearInterval(timer));
+  const lerInicio = () => { try { const v = sessionStorage.getItem(CHAVE); return v ? Number(v) : null; } catch { return null; } };
+  const gravarInicio = (v) => { try { v === null ? sessionStorage.removeItem(CHAVE) : sessionStorage.setItem(CHAVE, String(v)); } catch { /* sem sessionStorage */ } };
+  const aoClicarLink = (e) => {
+    const a = e.target.closest?.('a[href]');
+    if (!a || inicio === null) return;
+    if (confirm('Há uma leitura em andamento. Sair e descartar esta leitura?')) { gravarInicio(null); return; }
+    e.preventDefault(); e.stopPropagation();
+  };
+  document.addEventListener('click', aoClicarLink, true);
+  ctx.aoSair(() => { clearInterval(timer); document.removeEventListener('click', aoClicarLink, true); });
 
   const seletorTR = ctx.tr ? `<div class="cartao">
       <label for="modo">Como obter o T/R</label>
@@ -37,6 +49,7 @@ export default function cronometro(el, ctx) {
     <button id="crono" class="btn-crono">Iniciar</button>
     <div class="kpis" id="stats" style="margin-top:14px"></div>
     <p id="status" class="status"></p>
+    <p id="aviso-curta" class="aviso" hidden>Leitura muito curta (menos de 1 s) — ignorada. Foi um toque duplo?</p>
     <div class="cartao"><h2>Leituras (seg)</h2><ul class="leituras" id="leituras"></ul></div>` : ''}`;
 
   if (ctx.tr) {
@@ -66,11 +79,11 @@ export default function cronometro(el, ctx) {
         botoes: [{ texto: 'Cancelar', classe: 'sec', valor: false }, { texto: 'Descartar', classe: 'perigo', valor: true }] });
       if (!r.botao) return;
       Object.assign(alvo.leituras[b.dataset.descartar], { descartada: true, motivo: r.texto });
-      await ctx.salvar(); desenhar();
+      await ctx.salvar(); desenhar(); await verificarDiscrepancia();
     }));
     el.querySelectorAll('[data-restaurar]').forEach((b) => b.addEventListener('click', async () => {
       Object.assign(alvo.leituras[b.dataset.restaurar], { descartada: false, motivo: '' });
-      await ctx.salvar(); desenhar();
+      await ctx.salvar(); desenhar(); await verificarDiscrepancia();
     }));
   };
 
@@ -84,24 +97,35 @@ export default function cronometro(el, ctx) {
       campoRotulo: 'Motivo da confirmação (opcional)',
       botoes: [{ texto: 'Descartar leitura', classe: 'perigo', valor: 'descartar' }, { texto: 'Confirmar', valor: 'confirmar' }],
     });
+    if (r.botao === null) return;                 // aviso fechado sem escolha: decide depois
     if (r.botao === 'confirmar') Object.assign(alvo.leituras[i], { confirmada: true, motivoConfirmacao: r.texto });
     else Object.assign(alvo.leituras[i], { descartada: true, motivo: 'Discrepante (>20% abaixo da média)' });
     await ctx.salvar();
     desenhar();
+    if (r.botao === 'descartar') await verificarDiscrepancia();   // a nova menor leitura também pode destoar
   }
 
   const relogio = el.querySelector('#relogio');
   const botao = el.querySelector('#crono');
+  const avisoCurta = el.querySelector('#aviso-curta');
+  const rodar = (desde) => {
+    inicio = desde;
+    botao.textContent = 'Parar'; botao.classList.add('parar');
+    relogio.textContent = mmss(Date.now() - inicio);
+    timer = setInterval(() => { relogio.textContent = mmss(Date.now() - inicio); }, 100);
+  };
   botao.addEventListener('click', async () => {
     if (inicio === null) {
-      inicio = Date.now();
-      botao.textContent = 'Parar'; botao.classList.add('parar');
-      timer = setInterval(() => { relogio.textContent = mmss(Date.now() - inicio); }, 100);
+      avisoCurta.hidden = true;
+      const agora = Date.now();
+      gravarInicio(agora);
+      rodar(agora);
     } else {
       const seg = (Date.now() - inicio) / 1000;
-      clearInterval(timer); inicio = null;
+      clearInterval(timer); inicio = null; gravarInicio(null);
       botao.textContent = 'Iniciar'; botao.classList.remove('parar');
       relogio.textContent = mmss(seg * 1000);
+      if (seg < LEITURA_MINIMA_SEG) { avisoCurta.hidden = false; return; }
       alvo.leituras.push(novaLeitura(seg));
       await ctx.salvar();
       desenhar();
@@ -109,4 +133,6 @@ export default function cronometro(el, ctx) {
     }
   });
   desenhar();
+  const pendente = lerInicio();
+  if (pendente !== null) rodar(pendente);
 }

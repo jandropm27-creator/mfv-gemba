@@ -86,7 +86,9 @@ def _formulas(a: Aba):
     a.f(E["HORAS_DIA"], f'IF({E["MIN_DIA"]}="","",{E["MIN_DIA"]}/60)')
     a.f(E["DEMANDA_DIA"], 'IF(OR(DEMANDA="",DIAS_MES="",DIAS_MES=0),"",DEMANDA/DIAS_MES)')
     a.f(E["TAKT"], 'IF(OR(DEMANDA_DIA="",HORAS_DIA="",DISP_FAMILIA=""),"",HORAS_DIA*DISP_FAMILIA*60/DEMANDA_DIA)')
-    a.txt(E["UNID_TAKT"], "min/unid")
+    a.f(E["UNID_TAKT"], 'IF($I$37="","min/unid","min/"&$I$37)')
+    for r in LINHAS_TURNO:   # jornada com MOD(…;1): turno noturno atravessa a meia-noite
+        a.f(f"CY{r}", f"MOD(CX{r}-CT{r},1)-SUM(CU{r},CV{r},CW{r})")
 
     lead, tav = [], []
     for k in range(N_PROC + 1):          # k = 12 → estoque final

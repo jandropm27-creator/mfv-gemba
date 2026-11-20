@@ -1,5 +1,5 @@
 import * as db from '../db.js';
-import { novoMfv, exportarBackup, importarBackup } from '../modelo.js';
+import { novoMfv, exportarBackup, importarBackup, conflitos } from '../modelo.js';
 import { pendencias } from '../calculo.js';
 import { h, perguntar } from '../ui.js';
 
@@ -12,10 +12,10 @@ export default async function lista(el, ctx) {
       ${mfvs.length ? '' : '<p class="sutil">Nenhum MFV ainda. Toque em “Novo MFV” para começar a coleta.</p>'}
       ${mfvs.map((m) => {
         const n = pendencias(m).length;
-        return `<div class="proc"><a class="item" href="#/mfv/${m.id}">
+        return `<div class="proc"><a class="item" href="#/mfv/${h(m.id)}">
           <span>${h(m.cabecalho.cliente || 'Sem cliente')}<br><small>${h(m.cabecalho.produto || '')} · ${h(m.cabecalho.data)} · ${m.processos.length} processo(s)</small></span>
           <small>${n ? `${n} pendência(s)` : 'Completo'}</small></a>
-          <button class="perigo" data-excluir="${m.id}" aria-label="Excluir ${h(m.cabecalho.cliente || 'MFV')}">✕</button></div>`;
+          <button class="perigo" data-excluir="${h(m.id)}" aria-label="Excluir ${h(m.cabecalho.cliente || 'MFV')}">✕</button></div>`;
       }).join('')}
     </div>
     <div class="cartao" style="margin-top:24px"><h2>Backup</h2>
@@ -47,7 +47,16 @@ export default async function lista(el, ctx) {
   arq.addEventListener('change', async () => {
     try {
       const mfvs2 = importarBackup(await arq.files[0].text());
+      const repetidos = conflitos(await db.listar(), mfvs2);
+      if (repetidos.length) {
+        const nomes = repetidos.map((m) => m.cabecalho.cliente || 'sem cliente').join(', ');
+        const r = await perguntar('Substituir MFVs existentes?', {
+          texto: `${repetidos.length} MFV(s) do backup já existem neste celular (${nomes}) e serão substituídos pela versão do backup.`,
+          botoes: [{ texto: 'Cancelar', classe: 'sec', valor: false }, { texto: 'Substituir', classe: 'perigo', valor: true }] });
+        if (!r.botao) { arq.value = ''; return; }
+      }
       for (const m of mfvs2) await db.salvar(m);
+      arq.value = '';
       ctx.redesenhar();
     } catch (e) {
       await perguntar('Não foi possível importar', { texto: e.message, botoes: [{ texto: 'OK' }] });

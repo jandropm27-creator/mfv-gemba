@@ -36,3 +36,18 @@ test('backup de versão desconhecida é rejeitado', () => {
   assert.throws(() => modelo.importarBackup(JSON.stringify({ versao: 99, mfvs: [] })), /versão/i);
   assert.throws(() => modelo.importarBackup('não é json'), /inválido/i);
 });
+
+test('backup com MFV malformado é rejeitado com mensagem clara', () => {
+  const ruim = (m) => JSON.stringify({ versao: 1, mfvs: [m] });
+  const ok = modelo.novoMfv();
+  assert.throws(() => modelo.importarBackup(ruim({ ...ok, processos: undefined })), /MFV 1.*processos/i);
+  assert.throws(() => modelo.importarBackup(ruim({ ...ok, id: 5 })), /MFV 1.*id/i);
+  const semTarefas = structuredClone(ok); semTarefas.processos.push({ ...modelo.novoProcesso(0), tarefas: null });
+  assert.throws(() => modelo.importarBackup(ruim(semTarefas)), /tarefas/i);
+  assert.throws(() => modelo.importarBackup(ruim({ ...ok, producao: { turnos: 'x' } })), /turnos/i);
+});
+
+test('conflitos lista MFVs do backup que já existem no celular', () => {
+  const a = modelo.novoMfv(), b = modelo.novoMfv(), c = modelo.novoMfv();
+  assert.deepEqual(modelo.conflitos([a, b], [b, c]).map((m) => m.id), [b.id]);
+});

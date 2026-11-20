@@ -90,3 +90,12 @@ test('aba CRONOANÁLISE registrada', async () => {
 test('nomeArquivo normaliza cliente', () => {
   assert.equal(nomeArquivo(fx('mfv_3proc')), 'MFV_Padaria_Sao_Jose_Cia_Teste_1_2026-11-20.xlsx');
 });
+
+test('campo de pausa vazio num turno existente fica em branco (não 00:00)', async () => {
+  const m = fx('mfv_exemplo');
+  m.producao.turnos[0].pausaT = '';
+  const bytes = await gerarPlanilha(JSZip, modelo, mapa, m, xmlApi);
+  const aba = await (await JSZip.loadAsync(bytes)).file('xl/worksheets/sheet1.xml').async('string');
+  assert.doesNotMatch(cel(aba, mapa.producao.turnos[0].pausa_t), /<v>/);
+  assert.match(cel(aba, mapa.producao.turnos[0].entrada), /<v>/);
+});

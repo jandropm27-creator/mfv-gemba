@@ -1,6 +1,6 @@
 // Gerado por tools/gerar_sw.py — não editar à mão.
 // Guarda todos os arquivos do app para funcionar sem internet; a VERSAO muda quando qualquer arquivo muda.
-const VERSAO = 'mfv-gemba-65fc75c17529';
+const VERSAO = 'mfv-gemba-44914ce73c6d';
 const ARQUIVOS = [
   './',
   './app.css',
