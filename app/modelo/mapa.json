@@ -1,0 +1,234 @@
+{
+  "aba": "xl/worksheets/sheet1.xml",
+  "desenho": "xl/drawings/drawing1.xml",
+  "processos": [
+    {
+      "nome": "K33",
+      "operadores": "L34",
+      "tc": "L37",
+      "tr": "L38",
+      "disp": "L39",
+      "estoque": "H37",
+      "colunas": [
+        8,
+        13
+      ]
+    },
+    {
+      "nome": "Q33",
+      "operadores": "R34",
+      "tc": "R37",
+      "tr": "R38",
+      "disp": "R39",
+      "estoque": "N37",
+      "colunas": [
+        14,
+        19
+      ]
+    },
+    {
+      "nome": "W33",
+      "operadores": "X34",
+      "tc": "X37",
+      "tr": "X38",
+      "disp": "X39",
+      "estoque": "T37",
+      "colunas": [
+        20,
+        25
+      ]
+    },
+    {
+      "nome": "AC33",
+      "operadores": "AD34",
+      "tc": "AD37",
+      "tr": "AD38",
+      "disp": "AD39",
+      "estoque": "Z37",
+      "colunas": [
+        26,
+        31
+      ]
+    },
+    {
+      "nome": "AI33",
+      "operadores": "AJ34",
+      "tc": "AJ37",
+      "tr": "AJ38",
+      "disp": "AJ39",
+      "estoque": "AF37",
+      "colunas": [
+        32,
+        37
+      ]
+    },
+    {
+      "nome": "AO33",
+      "operadores": "AP34",
+      "tc": "AP37",
+      "tr": "AP38",
+      "disp": "AP39",
+      "estoque": "AL37",
+      "colunas": [
+        38,
+        43
+      ]
+    },
+    {
+      "nome": "AU33",
+      "operadores": "AV34",
+      "tc": "AV37",
+      "tr": "AV38",
+      "disp": "AV39",
+      "estoque": "AR37",
+      "colunas": [
+        44,
+        49
+      ]
+    },
+    {
+      "nome": "BA33",
+      "operadores": "BB34",
+      "tc": "BB37",
+      "tr": "BB38",
+      "disp": "BB39",
+      "estoque": "AX37",
+      "colunas": [
+        50,
+        55
+      ]
+    },
+    {
+      "nome": "BG33",
+      "operadores": "BH34",
+      "tc": "BH37",
+      "tr": "BH38",
+      "disp": "BH39",
+      "estoque": "BD37",
+      "colunas": [
+        56,
+        61
+      ]
+    },
+    {
+      "nome": "BM33",
+      "operadores": "BN34",
+      "tc": "BN37",
+      "tr": "BN38",
+      "disp": "BN39",
+      "estoque": "BJ37",
+      "colunas": [
+        62,
+        67
+      ]
+    },
+    {
+      "nome": "BS33",
+      "operadores": "BT34",
+      "tc": "BT37",
+      "tr": "BT38",
+      "disp": "BT39",
+      "estoque": "BP37",
+      "colunas": [
+        68,
+        73
+      ]
+    },
+    {
+      "nome": "BY33",
+      "operadores": "BZ34",
+      "tc": "BZ37",
+      "tr": "BZ38",
+      "disp": "BZ39",
+      "estoque": "BV37",
+      "colunas": [
+        74,
+        79
+      ]
+    }
+  ],
+  "estoque_final": "CB37",
+  "unidade": "I37",
+  "producao": {
+    "demanda": "CG15",
+    "dias_mes": "CN52",
+    "disp_familia": "CT52",
+    "turnos": [
+      {
+        "dias": [
+          "CM48",
+          "CN48",
+          "CO48",
+          "CP48",
+          "CQ48",
+          "CR48"
+        ],
+        "entrada": "CT48",
+        "pausa_m": "CU48",
+        "refeicao": "CV48",
+        "pausa_t": "CW48",
+        "saida": "CX48"
+      },
+      {
+        "dias": [
+          "CM49",
+          "CN49",
+          "CO49",
+          "CP49",
+          "CQ49",
+          "CR49"
+        ],
+        "entrada": "CT49",
+        "pausa_m": "CU49",
+        "refeicao": "CV49",
+        "pausa_t": "CW49",
+        "saida": "CX49"
+      },
+      {
+        "dias": [
+          "CM50",
+          "CN50",
+          "CO50",
+          "CP50",
+          "CQ50",
+          "CR50"
+        ],
+        "entrada": "CT50",
+        "pausa_m": "CU50",
+        "refeicao": "CV50",
+        "pausa_t": "CW50",
+        "saida": "CX50"
+      }
+    ]
+  },
+  "cabecalho": {
+    "cliente": "C26",
+    "produto": "C27",
+    "data": "C28",
+    "consultor": "C29"
+  },
+  "formas": {
+    "fornecedor": "MFV_FORNECEDOR",
+    "entregaFornecedor": "MFV_ENTREGA_FORNECEDOR",
+    "pcpSistema": "MFV_PCP_SISTEMA",
+    "previsaoFornecedor": "MFV_PREVISAO_FORNECEDOR",
+    "pedidoFornecedor": "MFV_PEDIDO_FORNECEDOR",
+    "cliente": "MFV_CLIENTE",
+    "previsaoCliente": "MFV_PREVISAO_CLIENTE",
+    "pedidoCliente": "MFV_PEDIDO_CLIENTE",
+    "entregaCliente": "MFV_ENTREGA_CLIENTE",
+    "progProducao": "MFV_PROG_PRODUCAO",
+    "progExpedicao": "MFV_PROG_EXPEDICAO"
+  },
+  "imagens_bloco": {
+    "caixa": "MFV_P{k}_CAIXA",
+    "estoque": "MFV_P{k}_ESTOQUE"
+  },
+  "bloco_vazio": {
+    "linhas": [
+      32,
+      42
+    ],
+    "estilo": "1"
+  }
+}

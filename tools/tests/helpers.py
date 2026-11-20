@@ -53,3 +53,55 @@ def abre_no_libreoffice(partes):
         r = subprocess.run(["soffice", "--headless", "--convert-to", "pdf", "--outdir", d, p],
                            capture_output=True, timeout=180)
         return r.returncode == 0 and os.path.exists(os.path.join(d, "t.pdf"))
+
+def preencher(partes, valores):
+    """Só para testes: escreve valores (número ou texto) em células da aba MFV EP."""
+    import blocos
+    p = dict(partes)
+    t = etree.fromstring(p[ABA])
+    linhas = blocos._linhas(t)
+    for ref, v in valores.items():
+        r = int(re.sub(r"[A-Z]", "", ref))
+        c = blocos._celula(linhas[r], ref)
+        for ch in list(c): c.remove(ch)
+        c.attrib.pop("t", None)
+        if isinstance(v, str):
+            blocos._texto(c, v)
+        else:
+            etree.SubElement(c, f"{{{NS['m']}}}v").text = repr(float(v))
+    p[ABA] = etree.tostring(t, xml_declaration=True, encoding="UTF-8", standalone=True)
+    return p
+
+def recalcular_partes(partes):
+    import xlsxpkg
+    sys_path = os.path.join(os.path.dirname(__file__), "..", "..", "tests")
+    import sys; sys.path.insert(0, os.path.abspath(sys_path))
+    import lo_recalc
+    d = tempfile.mkdtemp(); f = os.path.join(d, "x.xlsx"); xlsxpkg.gravar(partes, f)
+    return lo_recalc.recalcular(f)
+
+def hhmm(s):
+    h, m = map(int, s.split(":")); return (h * 60 + m) / 1440
+
+def dados_exemplo(mapa):
+    """Dados da planilha original, já em minutos, endereçados pelo mapa.json."""
+    v = {}
+    nomes = "ABCDEFGH"
+    tc_s = [52, 69, 73, 61, 55.5, 57, 65, 64]
+    est = [91, 155, 189, 95, 111, 76, 99, 83]
+    for i in range(8):
+        pr = mapa["processos"][i]
+        v[pr["nome"]] = f"PROC. {nomes[i]}"
+        v[pr["tc"]] = tc_s[i] / 60
+        v[pr["estoque"]] = est[i]
+    v[mapa["estoque_final"]] = 65
+    v[mapa["unidade"]] = "kg"
+    pd = mapa["producao"]
+    v[pd["demanda"]] = 5000; v[pd["dias_mes"]] = 20; v[pd["disp_familia"]] = 0.6
+    t0, t1 = pd["turnos"][0], pd["turnos"][1]
+    for i in range(4): v[t0["dias"][i]] = "X"
+    v[t1["dias"][4]] = "X"
+    for t in (t0, t1):
+        v[t["entrada"]] = hhmm("07:30"); v[t["pausa_m"]] = hhmm("00:14")
+        v[t["refeicao"]] = hhmm("01:30"); v[t["pausa_t"]] = 0; v[t["saida"]] = hhmm("17:00")
+    return v
