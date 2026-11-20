@@ -31,8 +31,8 @@ test('abre, coleta e gera planilha sem internet após o primeiro acesso', { time
 
 test('manifesto instalável', { timeout: 30000 }, async () => {
   await ctx.setOffline(false);
-  const r = await page.request.get(srv.url + 'manifest.webmanifest');
-  const m = await r.json();
+  await page.goto(srv.url);
+  const m = await page.evaluate(async () => (await fetch('manifest.webmanifest', { cache: 'reload' })).json());
   assert.equal(m.name, 'MFV Gemba');
   assert.equal(m.display, 'standalone');
   assert.ok(m.icons.some((i) => i.sizes === '512x512'));

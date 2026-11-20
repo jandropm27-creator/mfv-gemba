@@ -13,6 +13,8 @@ const TIPOS = { '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/cs
   '.png': 'image/png', '.svg': 'image/svg+xml' };
 
 export async function servir() {
+  // MFV_URL=https://…/ roda os testes contra o site publicado em vez do servidor local.
+  if (process.env.MFV_URL) return { url: process.env.MFV_URL.replace(/\/?$/, '/'), fechar: async () => {} };
   const srv = createServer(async (req, res) => {
     let p = decodeURIComponent(new URL(req.url, 'http://x').pathname);
     if (p.endsWith('/')) p += 'index.html';
