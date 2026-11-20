@@ -23,3 +23,8 @@ test('versão do service worker corresponde ao conteúdo atual (rode npm run sw)
   const sw = readFileSync(join(APP, 'sw.js'), 'utf8');
   assert.equal(sw.match(/const VERSAO = 'mfv-gemba-([0-9a-f]+)'/)[1], h.digest('hex').slice(0, 12));
 });
+
+test('instalação do service worker ignora o cache HTTP (evita misturar versões)', () => {
+  const sw = readFileSync(join(APP, 'sw.js'), 'utf8');
+  assert.match(sw, /new Request\(u, \{ cache: 'reload' \}\)/);
+});

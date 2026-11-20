@@ -69,6 +69,9 @@ async function rotear() {
 window.addEventListener('hashchange', rotear);
 rotear();
 
+// Pede ao navegador para não apagar os dados locais (coletas) por falta de espaço ou inatividade.
+navigator.storage?.persist?.().catch(() => {});
+
 if ('serviceWorker' in navigator && location.protocol !== 'file:') {
   navigator.serviceWorker.register('sw.js').catch(() => {});
 }

@@ -17,6 +17,17 @@ test('paraMin converte seg/min/h e aceita vírgula decimal', () => {
   assert.equal(paraMin('abc', 'min'), null);
 });
 
+test('numero entende separador de milhar brasileiro', async () => {
+  const { numero } = await import('../../app/js/unidades.js');
+  assert.equal(numero('12.500'), 12500);
+  assert.equal(numero('1.000'), 1000);
+  assert.equal(numero('1.234,5'), 1234.5);
+  assert.equal(numero('1.234.567'), 1234567);
+  assert.equal(numero('0,5'), 0.5);
+  assert.equal(numero('1.5'), 1.5);
+  assert.equal(numero('12.50'), 12.5);
+});
+
 test('hhmmParaMin', () => {
   assert.equal(hhmmParaMin('07:30'), 450);
   assert.equal(hhmmParaMin(''), 0);

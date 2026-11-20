@@ -85,7 +85,7 @@ def _formulas(a: Aba):
     a.f(E["MIN_DIA"], f'IF({E["SEG_DIA"]}="","",{E["SEG_DIA"]}/60)')
     a.f(E["HORAS_DIA"], f'IF({E["MIN_DIA"]}="","",{E["MIN_DIA"]}/60)')
     a.f(E["DEMANDA_DIA"], 'IF(OR(DEMANDA="",DIAS_MES="",DIAS_MES=0),"",DEMANDA/DIAS_MES)')
-    a.f(E["TAKT"], 'IF(OR(DEMANDA_DIA="",HORAS_DIA=""),"",HORAS_DIA*DISP_FAMILIA*60/DEMANDA_DIA)')
+    a.f(E["TAKT"], 'IF(OR(DEMANDA_DIA="",HORAS_DIA="",DISP_FAMILIA=""),"",HORAS_DIA*DISP_FAMILIA*60/DEMANDA_DIA)')
     a.txt(E["UNID_TAKT"], "min/unid")
 
     lead, tav = [], []
@@ -227,8 +227,23 @@ def _duas_casas(p, a: Aba):
     p["xl/styles.xml"] = _xml(st)
 
 
+def _grafico_sem_cache(p):
+    """Remove os pontos em cache do gráfico: visualizadores que não recalculam
+    (prévia do WhatsApp/Drive) mostrariam os números do exemplo."""
+    NS_C = "http://schemas.openxmlformats.org/drawingml/2006/chart"
+    g = etree.fromstring(p["xl/charts/chart1.xml"])
+    for cache in list(g.iter(f"{{{NS_C}}}numCache")) + list(g.iter(f"{{{NS_C}}}strCache")):
+        for pt in cache.findall(f"{{{NS_C}}}pt"):
+            cache.remove(pt)
+        cnt = cache.find(f"{{{NS_C}}}ptCount")
+        if cnt is not None:
+            cnt.set("val", "0")
+    p["xl/charts/chart1.xml"] = _xml(g)
+
+
 def aplicar(p):
     p = dict(p)
+    _grafico_sem_cache(p)
     a = Aba(p["xl/worksheets/sheet1.xml"])
     _formulas(a)
     _duas_casas(p, a)

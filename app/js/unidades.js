@@ -4,7 +4,10 @@ const FATOR = { seg: 1 / 60, min: 1, h: 60 };
 export function numero(v) {
   if (v === null || v === undefined) return null;
   if (typeof v === 'number') return Number.isFinite(v) ? v : null;
-  const s = String(v).trim().replace(/\s/g, '').replace(',', '.');
+  let s = String(v).trim().replace(/\s/g, '');
+  // Padrão brasileiro: vírgula decimal, ponto de milhar ("12.500" = 12500; "1.234,5" = 1234,5).
+  if (s.includes(',')) s = s.replace(/\./g, '').replace(',', '.');
+  else if (/^-?\d{1,3}(\.\d{3})+$/.test(s)) s = s.replace(/\./g, '');
   if (s === '' || !/^-?\d*\.?\d+$/.test(s)) return null;
   return Number(s);
 }

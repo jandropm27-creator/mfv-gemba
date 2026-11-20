@@ -60,6 +60,17 @@ class TestModelo(unittest.TestCase):
         self.assertEqual(self.recalc["AW37"], "min")
         self.assertEqual(self.recalc["CX52"], "min/unid")
 
+    def test_grafico_sem_valores_do_exemplo(self):
+        g = self.p[GRAFICO].decode("utf-8")
+        self.assertNotIn("<c:pt ", g)
+        self.assertNotIn("67.10", g)
+
+    def test_takt_em_branco_sem_disponibilidade(self):
+        d = dados_exemplo(self.mapa); del d[self.mapa["producao"]["disp_familia"]]
+        r = lo_recalc.valores_da_aba(recalcular_partes(preencher(self.p, d)))
+        self.assertIsNone(r.get("CW52"))
+        self.assertIsNone(r.get("CF41"))
+
     def test_formato_duas_casas_nos_tempos(self):
         from lxml import etree
         st = etree.fromstring(self.p["xl/styles.xml"])

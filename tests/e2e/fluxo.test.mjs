@@ -11,6 +11,10 @@ before(async () => {
   ({ navegador: nav, contexto: ctx } = await abrirCelular());
   page = await ctx.newPage();
   page.on('pageerror', (e) => console.error('ERRO NA PÁGINA:', e.message));
+  await page.addInitScript(() => {
+    window.__persist = 0;
+    if (navigator.storage) navigator.storage.persist = async () => { window.__persist++; return true; };
+  });
   await page.clock.install();
   await page.goto(srv.url);
 });
@@ -26,6 +30,10 @@ async function cronometrar(segundos) {
   await page.getByRole('button', { name: /Parar/ }).click();
   await page.getByText(`L${++leituras}`, { exact: true }).waitFor();
 }
+
+test('pede armazenamento persistente ao abrir', async () => {
+  await page.waitForFunction(() => window.__persist > 0, null, { timeout: 5000 });
+});
 
 test('fluxo completo no Gemba', async () => {
   await page.getByRole('button', { name: 'Novo MFV' }).click();
