@@ -20,6 +20,8 @@ test('paraMin converte seg/min/h e aceita vírgula decimal', () => {
 test('hhmmParaMin', () => {
   assert.equal(hhmmParaMin('07:30'), 450);
   assert.equal(hhmmParaMin(''), 0);
+  assert.equal(hhmmParaMin('15'), 15);     // número sem ":" em duração = minutos
+  assert.equal(hhmmParaMin('1:30'), 90);
 });
 
 test('estatísticas: menor leitura válida, completa com 3', () => {

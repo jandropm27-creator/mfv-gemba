@@ -17,6 +17,7 @@ export function paraMin(valor, unidade = 'min') {
 
 export function hhmmParaMin(s) {
   if (!s) return 0;
+  if (!String(s).includes(':')) return numero(s) || 0;   // só número = minutos
   const [h, m] = String(s).split(':').map(Number);
   return (h || 0) * 60 + (m || 0);
 }
