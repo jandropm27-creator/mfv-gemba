@@ -60,6 +60,13 @@ class TestModelo(unittest.TestCase):
         self.assertEqual(self.recalc["AW37"], "min")
         self.assertEqual(self.recalc["CX52"], "min/unid")
 
+    def test_sem_metadados_pessoais(self):
+        core = self.p["docProps/core.xml"].decode("utf-8")
+        for t in ("Rodrigo", "Paulo", "Lima"):
+            self.assertNotIn(t, core)
+        self.assertNotIn(b"absPath", self.p["xl/workbook.xml"])
+        self.assertNotIn(b"Users", self.p["xl/workbook.xml"])
+
     def test_grafico_sem_valores_do_exemplo(self):
         g = self.p[GRAFICO].decode("utf-8")
         self.assertNotIn("<c:pt ", g)

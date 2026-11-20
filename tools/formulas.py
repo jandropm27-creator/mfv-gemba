@@ -241,8 +241,25 @@ def _grafico_sem_cache(p):
     p["xl/charts/chart1.xml"] = _xml(g)
 
 
+def _sem_metadados(p):
+    """Remove autor, último editor e caminho local do arquivo de origem (o modelo é servido publicamente)."""
+    core = p["docProps/core.xml"].decode("utf-8")
+    core = re.sub(r"<dc:creator>.*?</dc:creator>", "<dc:creator>MFV Gemba</dc:creator>", core)
+    core = re.sub(r"<cp:lastModifiedBy>.*?</cp:lastModifiedBy>", "<cp:lastModifiedBy>MFV Gemba</cp:lastModifiedBy>", core)
+    p["docProps/core.xml"] = core.encode("utf-8")
+    wb = p["xl/workbook.xml"].decode("utf-8")
+    wb = re.sub(r"<mc:AlternateContent[^>]*>\s*<mc:Choice[^>]*>\s*<x15ac:absPath[^>]*/>\s*</mc:Choice>\s*</mc:AlternateContent>", "", wb)
+    p["xl/workbook.xml"] = wb.encode("utf-8")
+    if "docProps/app.xml" in p:
+        app = p["docProps/app.xml"].decode("utf-8")
+        app = re.sub(r"<Company>.*?</Company>", "<Company></Company>", app)
+        app = re.sub(r"<Manager>.*?</Manager>", "<Manager></Manager>", app)
+        p["docProps/app.xml"] = app.encode("utf-8")
+
+
 def aplicar(p):
     p = dict(p)
+    _sem_metadados(p)
     _grafico_sem_cache(p)
     a = Aba(p["xl/worksheets/sheet1.xml"])
     _formulas(a)
