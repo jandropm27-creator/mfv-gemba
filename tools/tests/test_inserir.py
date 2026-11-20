@@ -19,6 +19,11 @@ class TestInserir(unittest.TestCase):
         self.assertIn("CB43", formula(self.p, "CF43"))
         self.assertEqual(formula(self.p, "H43"), "=((H37)/($CG$15/21))")
 
+    def test_formulas_compartilhadas_expandidas(self):
+        self.assertNotIn(b't="shared"', self.p[ABA])
+        self.assertEqual(formula(self.p, "BC45"), "=BC37")
+        self.assertEqual(formula(self.p, "C60"), "=C59")
+
     def test_merges(self):
         m = merges(self.p)
         self.assertIn("CB37:CC37", m)

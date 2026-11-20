@@ -43,11 +43,13 @@ def deslocar_formula(f: str, a_partir_col: int, n: int) -> str:
     return _mapear(f, func)
 
 
-def transladar_formula(f: str, dcol: int) -> str:
-    """Move referências com coluna relativa em dcol colunas (como copiar/colar)."""
+def transladar_formula(f: str, dcol: int, drow: int = 0) -> str:
+    """Move referências relativas em dcol colunas e drow linhas (como copiar/colar)."""
     def func(d1, col, d2, row):
-        c = col_num(col)
+        c, r = col_num(col), int(row)
         if not d1:
             c += dcol
-        return f"{d1}{col_letras(c)}{d2}{row}"
+        if not d2:
+            r += drow
+        return f"{d1}{col_letras(c)}{d2}{r}"
     return _mapear(f, func)

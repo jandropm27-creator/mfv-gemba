@@ -58,7 +58,27 @@ def deslocar_formula_qualificada(f: str, aba_nome: str, a: int, n: int) -> str:
     return re.sub(re.escape(pref) + r"((?:\$?[A-Z]{1,3}\$?\d+)(?::\$?[A-Z]{1,3}\$?\d+)?)", rep, f)
 
 
+def expandir_compartilhadas(root) -> None:
+    """Converte fórmulas compartilhadas (t="shared") em fórmulas normais por célula."""
+    mestres = {}
+    for c in root.iter(f"{{{NS_M}}}c"):
+        f = c.find(f"{{{NS_M}}}f")
+        if f is not None and f.get("t") == "shared" and f.get("ref"):
+            mestres[f.get("si")] = (c.get("r"), f.text)
+    for c in root.iter(f"{{{NS_M}}}c"):
+        f = c.find(f"{{{NS_M}}}f")
+        if f is None or f.get("t") != "shared":
+            continue
+        rm, texto = mestres[f.get("si")]
+        cm, lm = _split_ref(rm)
+        cc, lc = _split_ref(c.get("r"))
+        f.text = refs.transladar_formula(texto, cc - cm, lc - lm)
+        for k in ("t", "ref", "si"):
+            f.attrib.pop(k, None)
+
+
 def _aba(root, a, n, origem_larg):
+    expandir_compartilhadas(root)
     for c in root.iter(f"{{{NS_M}}}c"):
         c.set("r", _shift_ref(c.get("r"), a, n))
         f = c.find(f"{{{NS_M}}}f")

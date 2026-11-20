@@ -24,6 +24,8 @@ class TestRefs(unittest.TestCase):
         self.assertEqual(t("=((AX37)/($BI$15/21))", 6), "=((BD37)/($BI$15/21))")
         self.assertEqual(t("=AT37", 6), "=AZ37")
         self.assertEqual(t("=$AT37", 6), "=$AT37")
+        self.assertEqual(t("=BB37", 1, 8), "=BC45")
+        self.assertEqual(t("=B$37+$C5", 0, 2), "=B$37+$C7")
 
 if __name__ == "__main__":
     unittest.main()
