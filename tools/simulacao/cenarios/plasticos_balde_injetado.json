@@ -1,0 +1,40 @@
+{
+  "id": "plasticos_balde_injetado",
+  "titulo": "Plásticos – injeção de balde 10 L",
+  "cabecalho": { "cliente": "Plásticos Modelo (simulação)", "produto": "Balde plástico PP 10 L com alça", "consultor": "Jandro Medeiros", "unidade": "un" },
+  "producao": {
+    "demanda": "30.000", "dias": "26", "disp": "90",
+    "turnos": [
+      { "dias": ["Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"], "entrada": "06:00", "pausaM": "00:10", "refeicao": "00:30", "pausaT": "00:10", "saida": "14:20" }
+    ]
+  },
+  "fluxos": {
+    "Fornecedor / matéria-prima": "Distribuidor de resina PP e masterbatch",
+    "Frequência de entrega do fornecedor": "Quinzenal",
+    "Pedido ao fornecedor": "Pedido quinzenal por e-mail",
+    "Previsão enviada ao fornecedor": "Previsão mensal",
+    "Sistema do PCP": "ERP + quadro de máquinas",
+    "Cliente / canal": "Atacarejos e lojas de utilidades",
+    "Previsão recebida do cliente": "Sem previsão",
+    "Pedidos do cliente": "Pedidos semanais por representante",
+    "Frequência de entrega ao cliente": "Semanal",
+    "Programação para a produção": "Programação por máquina",
+    "Programação para a expedição": "Romaneio semanal"
+  },
+  "estoque_final": "4000",
+  "processos": [
+    { "nome": "Preparação de material", "op": "1", "postos": "1", "qtd": "250", "disp": "95", "est": "30000",
+      "tarefas": [ { "nome": "Misturar resina e masterbatch (100 kg)", "leituras": [900, 930, 915] } ],
+      "tr": { "modo": "informado", "valor": "20", "unidade": "min" } },
+    { "nome": "Injeção", "op": "1", "postos": "2", "qtd": "1", "disp": "85", "est": "250",
+      "tarefas": [ { "nome": "Ciclo de injeção do balde", "leituras": [45, 46, 70, 45], "descartar": { "leitura": 3, "motivo": "Peça presa no molde – parada" } } ],
+      "tr": { "modo": "cronometrado", "leituras": [2700, 2880, 2640], "descricao": "Troca de molde" } },
+    { "nome": "Rebarbação e inspeção", "op": "1", "postos": "1", "qtd": "1", "disp": "95", "est": "1800",
+      "tarefas": [ { "nome": "Rebarbar e inspecionar o balde", "leituras": [12, 13, 9], "confirmar": "Molde recém-revisado – pouca rebarba" } ],
+      "tr": { "modo": "nao_aplica" } },
+    { "nome": "Montagem da alça", "op": "1", "postos": "1", "qtd": "1", "disp": "95", "est": "600",
+      "tarefas": [ { "nome": "Encaixar a alça metálica", "leituras": [14, 15, 14] } ], "tr": { "modo": "nao_aplica" } },
+    { "nome": "Embalagem", "op": "1", "postos": "1", "qtd": "10", "disp": "97", "est": "400",
+      "tarefas": [ { "nome": "Empilhar 10 baldes e ensacar", "leituras": [60, 62, 61] } ], "tr": { "modo": "nao_aplica" } }
+  ]
+}
