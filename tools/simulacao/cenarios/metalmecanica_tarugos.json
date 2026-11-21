@@ -10,7 +10,7 @@
   },
   "fluxos": {
     "Fornecedor / matéria-prima": "Usina siderúrgica – barras SAE 1045 laminadas",
-    "Frequência de entrega do fornecedor": "Quinzenal",
+    "Frequência de entrega do fornecedor": "Quinz.",
     "Pedido ao fornecedor": "Pedido mensal por e-mail",
     "Previsão enviada ao fornecedor": "Previsão trimestral",
     "Sistema do PCP": "ERP",

@@ -18,13 +18,13 @@
     "Cliente / canal": "Supermercados e food service (CE)",
     "Previsão recebida do cliente": "Previsão mensal",
     "Pedidos do cliente": "Pedidos diários (WhatsApp)",
-    "Frequência de entrega ao cliente": "Diária (refrig.)",
+    "Frequência de entrega ao cliente": "Diária refrig.",
     "Programação para a produção": "Programação diária",
     "Programação para a expedição": "Roteiro diário de entregas"
   },
   "estoque_final": "7500",
   "processos": [
-    { "nome": "Pesagem de ingredientes", "op": "1", "postos": "1", "qtd": "50", "disp": "95", "est": "9000",
+    { "nome": "Pesagem ingred.", "op": "1", "postos": "1", "qtd": "50", "disp": "95", "est": "9000",
       "tarefas": [ { "nome": "Pesar ingredientes da batelada (50 kg)", "leituras": [540, 570, 555] } ], "tr": { "modo": "nao_aplica" } },
     { "nome": "Escaldamento e mistura", "op": "1", "postos": "1", "qtd": "50", "disp": "88", "est": "100",
       "tarefas": [ { "nome": "Escaldar o polvilho", "leituras": [480, 495, 470] },

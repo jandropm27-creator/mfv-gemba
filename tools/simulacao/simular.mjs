@@ -8,6 +8,19 @@ import { chromium, devices, servir } from '../../tests/e2e/apoio.mjs';
 
 const [, , arqCenario, OUT] = process.argv;
 const C = JSON.parse(readFileSync(arqCenario, 'utf8'));
+
+// Textos que precisam caber nas formas do mapa: se não couberem, use abreviação no cenário.
+// Caminhões: ~8 caracteres por linha, 2 linhas. Caixa do processo: ~22 caracteres.
+const LIMITES = { caminhaoPalavra: 8, caminhaoTotal: 18, processo: 22 };
+const problemas = [];
+for (const campo of ['Frequência de entrega do fornecedor', 'Frequência de entrega ao cliente']) {
+  const t = C.fluxos[campo] || '';
+  const longa = t.split(/\s+/).find((w) => w.length > LIMITES.caminhaoPalavra);
+  if (longa || t.length > LIMITES.caminhaoTotal) problemas.push(`caminhão “${campo}”: “${t}” — abrevie (palavras até ${LIMITES.caminhaoPalavra} letras, total até ${LIMITES.caminhaoTotal})`);
+}
+for (const p of C.processos) if (p.nome.length > LIMITES.processo) problemas.push(`processo “${p.nome}” — abrevie (até ${LIMITES.processo} caracteres)`);
+if (problemas.length) { console.error('Textos grandes demais para o mapa:\n- ' + problemas.join('\n- ')); process.exit(2); }
+
 mkdirSync(OUT, { recursive: true });
 const SRV = process.env.LOCAL ? await servir() : null;
 const URL = SRV ? SRV.url : 'https://jandropm27-creator.github.io/mfv-gemba/';

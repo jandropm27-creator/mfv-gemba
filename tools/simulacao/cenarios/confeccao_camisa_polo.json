@@ -10,14 +10,14 @@
   },
   "fluxos": {
     "Fornecedor / matéria-prima": "Malharia – malha piquet 100% algodão",
-    "Frequência de entrega do fornecedor": "Quinzenal",
+    "Frequência de entrega do fornecedor": "Quinz.",
     "Pedido ao fornecedor": "E-mail por coleção",
     "Previsão enviada ao fornecedor": "Sem previsão",
     "Sistema do PCP": "Planilha + quadro de pedidos",
     "Cliente / canal": "Lojas de uniformes e varejo (NE)",
     "Previsão recebida do cliente": "Pedido por coleção",
     "Pedidos do cliente": "Pedidos semanais (representante)",
-    "Frequência de entrega ao cliente": "Semanal (transp.)",
+    "Frequência de entrega ao cliente": "Semanal",
     "Programação para a produção": "Ordem de corte semanal",
     "Programação para a expedição": "Romaneio semanal"
   },
