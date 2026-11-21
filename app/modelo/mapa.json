@@ -230,5 +230,9 @@
       42
     ],
     "estilo": "1"
+  },
+  "grafico": {
+    "parte": "xl/charts/chart1.xml",
+    "primeira_linha": 52
   }
 }

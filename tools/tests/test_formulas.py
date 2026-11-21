@@ -93,6 +93,24 @@ class TestModelo(unittest.TestCase):
         self.assertIsNone(r.get("CW52"))
         self.assertIsNone(r.get("CF41"))
 
+    def _xf(self, ref):
+        from lxml import etree
+        st = etree.fromstring(self.p["xl/styles.xml"])
+        return st.find("m:cellXfs", NS).findall("m:xf", NS)[int(celula(self.p, ref).get("s"))]
+
+    def test_estoques_grandes_cabem_na_celula(self):
+        """45.000 m não pode virar ###: formato #,##0 (id 3) e reduzir para caber."""
+        for ref in ("H37", "N37", "BV37", "CB37"):   # estoque do bloco k em col 8+6k (k=11 → BV)
+            xf = self._xf(ref)
+            self.assertEqual(xf.get("numFmtId"), "3", ref)
+            al = xf.find("m:alignment", NS)
+            self.assertEqual(al.get("shrinkToFit") if al is not None else None, "1", ref)
+
+    def test_rotulos_do_grafico_com_duas_casas(self):
+        for ref in ("B52", "C52", "B63", "C63"):
+            self.assertEqual(self._xf(ref).get("numFmtId"), "2", ref)
+        self.assertIn(b'formatCode="#,##0.00"', self.p[GRAFICO])
+
     def test_formato_duas_casas_nos_tempos(self):
         from lxml import etree
         st = etree.fromstring(self.p["xl/styles.xml"])

@@ -99,3 +99,10 @@ test('campo de pausa vazio num turno existente fica em branco (não 00:00)', asy
   assert.doesNotMatch(cel(aba, mapa.producao.turnos[0].pausa_t), /<v>/);
   assert.match(cel(aba, mapa.producao.turnos[0].entrada), /<v>/);
 });
+
+test('gráfico mostra só os processos cadastrados', async () => {
+  const { parte } = await gerar('mfv_3proc');
+  const g = await parte('xl/charts/chart1.xml');
+  for (const c of ['A', 'B', 'C']) assert.ok(g.includes(`$${c}$52:$${c}$54<`), `série ${c}`);
+  assert.ok(!g.includes('$63<'));
+});

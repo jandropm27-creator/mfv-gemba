@@ -262,6 +262,13 @@ export async function gerarPlanilha(JSZip, modeloBuf, mapa, mfv, xmlApi = global
   preencherDesenho(desDoc, mapa, mfv);
   zip.file(mapa.desenho, ser(desDoc));
 
+  // Gráfico de balanceamento só com os processos cadastrados (sem barras vazias nem Takt caindo a zero).
+  if (mapa.grafico && mfv.processos.length) {
+    const ini = mapa.grafico.primeira_linha, fim = ini + mfv.processos.length - 1;
+    const g = await zip.file(mapa.grafico.parte).async('string');
+    zip.file(mapa.grafico.parte, g.replace(new RegExp(`\\$([ABC])\\$${ini}:\\$\\1\\$\\d+`, 'g'), `$$$1$$${ini}:$$$1$$${fim}`));
+  }
+
   await adicionarAba(zip, xmlCronoanalise(linhasCronoanalise(mfv)));
   return zip.generateAsync({ type: 'uint8array', compression: 'DEFLATE' });
 }

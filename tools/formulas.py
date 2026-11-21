@@ -209,24 +209,36 @@ def _desenho(p):
     p["xl/drawings/drawing1.xml"] = _xml(d)
 
 
-def _duas_casas(p, a: Aba):
-    """Células de T/C e T/R (em minutos) passam a exibir 2 casas decimais (numFmtId 2 = 0.00)."""
+def _formatar(p, a: Aba, refs_, num_fmt_id: str, reduzir=False):
+    """Clona o estilo de cada célula trocando o formato numérico (e, se pedido, 'reduzir para caber')."""
     import copy
     st = etree.fromstring(p["xl/styles.xml"])
     xfs = st.find(f"{{{NS_M}}}cellXfs")
     clones = {}
-    for k in range(N_PROC):
-        for r in (37, 38):
-            c = a.cel(f"{L(col_valor(k))}{r}")
-            s0 = c.get("s", "0")
-            if s0 not in clones:
-                novo = copy.deepcopy(xfs.findall(f"{{{NS_M}}}xf")[int(s0)])
-                novo.set("numFmtId", "2"); novo.set("applyNumberFormat", "1")
-                xfs.append(novo)
-                clones[s0] = str(len(xfs) - 1)
-            c.set("s", clones[s0])
+    for ref in refs_:
+        c = a.cel(ref)
+        s0 = c.get("s", "0")
+        if s0 not in clones:
+            novo = copy.deepcopy(xfs.findall(f"{{{NS_M}}}xf")[int(s0)])
+            novo.set("numFmtId", num_fmt_id); novo.set("applyNumberFormat", "1")
+            if reduzir:
+                al = novo.find(f"{{{NS_M}}}alignment")
+                if al is None:
+                    al = etree.SubElement(novo, f"{{{NS_M}}}alignment")
+                al.set("shrinkToFit", "1"); novo.set("applyAlignment", "1")
+            xfs.append(novo)
+            clones[s0] = str(len(xfs) - 1)
+        c.set("s", clones[s0])
     xfs.set("count", str(len(xfs)))
     p["xl/styles.xml"] = _xml(st)
+
+
+def _duas_casas(p, a: Aba):
+    """T/C e T/R em minutos e a tabela do gráfico com 2 casas (numFmtId 2 = 0.00);
+    estoques com milhar e sem casas (numFmtId 3 = #,##0), reduzindo para caber (45.000 m não vira ###)."""
+    _formatar(p, a, [f"{L(col_valor(k))}{r}" for k in range(N_PROC) for r in (37, 38)], "2")
+    _formatar(p, a, [f"{c}{r}" for r in range(52, 64) for c in ("B", "C")], "2")
+    _formatar(p, a, [f"{L(col_estoque(k))}37" for k in range(N_PROC)] + [END["ESTOQUE_FINAL"]], "3", reduzir=True)
 
 
 def _grafico_sem_cache(p):
@@ -240,6 +252,9 @@ def _grafico_sem_cache(p):
         cnt = cache.find(f"{{{NS_C}}}ptCount")
         if cnt is not None:
             cnt.set("val", "0")
+    for nf in g.iter(f"{{{NS_C}}}numFmt"):          # rótulos com 2 casas (T/C em min por unidade é pequeno)
+        if nf.get("formatCode") == "#,##0.0":
+            nf.set("formatCode", "#,##0.00"); nf.set("sourceLinked", "0")
     p["xl/charts/chart1.xml"] = _xml(g)
 
 
@@ -288,4 +303,5 @@ def mapa():
         "formas": {campo: nome for campo, nome, _ in FORMAS},
         "imagens_bloco": {"caixa": "MFV_P{k}_CAIXA", "estoque": "MFV_P{k}_ESTOQUE"},
         "bloco_vazio": {"linhas": [32, 42], "estilo": ESTILO_VAZIO},
+        "grafico": {"parte": "xl/charts/chart1.xml", "primeira_linha": 52},
     }
