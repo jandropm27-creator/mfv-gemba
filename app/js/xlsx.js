@@ -217,6 +217,14 @@ function linhasCronoanalise(mfv) {
   return linhas;
 }
 
+// Largura de cada coluna: o maior texto da coluna (cabeçalho ou célula), entre 10 e 40 caracteres.
+function larguras(linhas) {
+  const n = Math.max(...linhas.map((l) => l.length));
+  return Array.from({ length: n }, (_, j) => Math.min(40, Math.max(
+    /motivo/i.test(String(linhas[0][j])) ? 30 : 10,          // motivos digitados no Gemba costumam ser longos
+    ...linhas.map((l) => String(l[j] ?? '').length + 2))));
+}
+
 function xmlCronoanalise(linhas) {
   const rows = linhas.map((cols, i) => {
     const cells = cols.map((v, j) => {
@@ -227,7 +235,7 @@ function xmlCronoanalise(linhas) {
     }).join('');
     return `<row r="${i + 1}">${cells}</row>`;
   }).join('');
-  return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<worksheet xmlns="${NS_M}" xmlns:r="${NS_R}"><sheetViews><sheetView workbookViewId="0"><pane ySplit="1" topLeftCell="A2" activePane="bottomLeft" state="frozen"/></sheetView></sheetViews><cols><col min="1" max="2" width="24" customWidth="1"/></cols><sheetData>${rows}</sheetData></worksheet>`;
+  return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<worksheet xmlns="${NS_M}" xmlns:r="${NS_R}"><sheetViews><sheetView workbookViewId="0"><pane ySplit="1" topLeftCell="A2" activePane="bottomLeft" state="frozen"/></sheetView></sheetViews><cols>${larguras(linhas).map((w, j) => `<col min="${j + 1}" max="${j + 1}" width="${w}" customWidth="1"/>`).join('')}</cols><sheetData>${rows}</sheetData></worksheet>`;
 }
 
 async function adicionarAba(zip, xml) {

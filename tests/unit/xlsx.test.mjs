@@ -106,3 +106,12 @@ test('gráfico mostra só os processos cadastrados', async () => {
   for (const c of ['A', 'B', 'C']) assert.ok(g.includes(`$${c}$52:$${c}$54<`), `série ${c}`);
   assert.ok(!g.includes('$63<'));
 });
+
+test('CRONOANÁLISE com colunas largas o bastante para os textos', async () => {
+  const { parte } = await gerar('mfv_exemplo');
+  const s5 = await parte('xl/worksheets/sheet5.xml');
+  const larg = Object.fromEntries([...s5.matchAll(/<col min="(\d+)" max="\d+" width="([\d.]+)"/g)].map((m) => [Number(m[1]), Number(m[2])]));
+  const cab = [...s5.match(/<row r="1">([\s\S]*?)<\/row>/)[1].matchAll(/<t[^>]*>([^<]*)<\/t>/g)].map((m) => m[1]);
+  cab.forEach((titulo, i) => assert.ok((larg[i + 1] || 0) >= Math.min(titulo.length + 2, 34), `coluna ${i + 1} (${titulo}) estreita: ${larg[i + 1]}`));
+  assert.ok(larg[cab.indexOf('Descartes (motivo)') + 1] >= 30);
+});
