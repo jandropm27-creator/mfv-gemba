@@ -1,0 +1,43 @@
+{
+  "id": "panificacao_pao_de_queijo",
+  "titulo": "Panificação – pão de queijo congelado",
+  "cabecalho": { "cliente": "Pão de Queijo Modelo (simulação)", "produto": "Pão de queijo congelado – pacote 1 kg", "consultor": "Jandro Medeiros", "unidade": "kg" },
+  "producao": {
+    "demanda": "24.000", "dias": "25", "disp": "85",
+    "turnos": [
+      { "dias": ["Seg", "Ter", "Qua", "Qui", "Sex"], "entrada": "06:00", "pausaM": "00:10", "refeicao": "01:00", "pausaT": "00:10", "saida": "15:00" },
+      { "dias": ["Sáb"], "entrada": "06:00", "pausaM": "00:10", "saida": "10:00" }
+    ]
+  },
+  "fluxos": {
+    "Fornecedor / matéria-prima": "Fecularia (polvilho) e laticínio (queijo)",
+    "Frequência de entrega do fornecedor": "Semanal / 2x sem.",
+    "Pedido ao fornecedor": "WhatsApp semanal",
+    "Previsão enviada ao fornecedor": "Previsão mensal",
+    "Sistema do PCP": "Planilha Excel",
+    "Cliente / canal": "Supermercados e food service (CE)",
+    "Previsão recebida do cliente": "Previsão mensal",
+    "Pedidos do cliente": "Pedidos diários (WhatsApp)",
+    "Frequência de entrega ao cliente": "Diária (refrig.)",
+    "Programação para a produção": "Programação diária",
+    "Programação para a expedição": "Roteiro diário de entregas"
+  },
+  "estoque_final": "7500",
+  "processos": [
+    { "nome": "Pesagem de ingredientes", "op": "1", "postos": "1", "qtd": "50", "disp": "95", "est": "9000",
+      "tarefas": [ { "nome": "Pesar ingredientes da batelada (50 kg)", "leituras": [540, 570, 555] } ], "tr": { "modo": "nao_aplica" } },
+    { "nome": "Escaldamento e mistura", "op": "1", "postos": "1", "qtd": "50", "disp": "88", "est": "100",
+      "tarefas": [ { "nome": "Escaldar o polvilho", "leituras": [480, 495, 470] },
+                   { "nome": "Misturar queijo, ovos e leite", "leituras": [720, 750, 735] } ],
+      "tr": { "modo": "informado", "valor": "40", "unidade": "min" } },
+    { "nome": "Boleamento", "op": "1", "postos": "1", "qtd": "3", "disp": "90", "est": "150",
+      "tarefas": [ { "nome": "Bolear e dispor na bandeja (3 kg)", "leituras": [66, 65, 98, 67], "descartar": { "leitura": 3, "motivo": "Massa grudou no bico da boleadora" } } ],
+      "tr": { "modo": "cronometrado", "leituras": [900, 960, 870], "descricao": "Troca do molde de gramatura (25 g → 15 g)" } },
+    { "nome": "Ultracongelamento", "op": "1", "postos": "2", "qtd": "120", "disp": "96", "est": "360",
+      "tarefas": [ { "nome": "Ultracongelar rack de 120 kg", "leituras": [4500, 4620, 4560] } ], "tr": { "modo": "nao_aplica" } },
+    { "nome": "Embalagem", "op": "2", "postos": "2", "qtd": "1", "disp": "92", "est": "1200",
+      "tarefas": [ { "nome": "Pesar e ensacar 1 kg", "leituras": [25, 26, 25] },
+                   { "nome": "Selar e etiquetar", "leituras": [10, 11, 7], "confirmar": "Pacote já veio pré-etiquetado" } ],
+      "tr": { "modo": "nao_aplica" } }
+  ]
+}

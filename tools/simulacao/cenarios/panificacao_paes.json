@@ -1,0 +1,48 @@
+{
+  "id": "panificacao_paes",
+  "titulo": "Panificação – pão francês",
+  "cabecalho": { "cliente": "Padaria Industrial Modelo (simulação)", "produto": "Pão francês 50 g", "consultor": "Jandro Medeiros", "unidade": "un" },
+  "producao": {
+    "demanda": "300.000", "dias": "26", "disp": "90",
+    "turnos": [
+      { "dias": ["Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"], "entrada": "03:00", "pausaM": "00:10", "refeicao": "00:30", "pausaT": "00:10", "saida": "11:00" }
+    ]
+  },
+  "fluxos": {
+    "Fornecedor / matéria-prima": "Moinho de trigo – farinha especial",
+    "Frequência de entrega do fornecedor": "Semanal",
+    "Pedido ao fornecedor": "WhatsApp semanal",
+    "Previsão enviada ao fornecedor": "Sem previsão",
+    "Sistema do PCP": "Caderno + WhatsApp",
+    "Cliente / canal": "Mercadinhos e cafeterias do bairro",
+    "Previsão recebida do cliente": "Sem previsão",
+    "Pedidos do cliente": "Pedido diário até 18h (WhatsApp)",
+    "Frequência de entrega ao cliente": "Diária às 06h",
+    "Programação para a produção": "Lista diária de produção",
+    "Programação para a expedição": "Rota diária de entrega"
+  },
+  "estoque_final": "2000",
+  "processos": [
+    { "nome": "Pesagem", "op": "1", "postos": "1", "qtd": "840", "disp": "95", "est": "25000",
+      "tarefas": [ { "nome": "Pesar farinha e ingredientes (25 kg)", "leituras": [360, 375, 350] } ], "tr": { "modo": "nao_aplica" } },
+    { "nome": "Mistura e sova", "op": "1", "postos": "1", "qtd": "840", "disp": "90", "est": "840",
+      "tarefas": [ { "nome": "Misturar os ingredientes", "leituras": [240, 250, 245] },
+                   { "nome": "Sovar até o ponto de véu", "leituras": [600, 630, 615] } ],
+      "tr": { "modo": "cronometrado", "leituras": [600, 660, 630], "descricao": "Limpeza da masseira entre massas" } },
+    { "nome": "Divisão e boleamento", "op": "1", "postos": "1", "qtd": "30", "disp": "92", "est": "840",
+      "tarefas": [ { "nome": "Dividir em 30 porções", "leituras": [44, 44, 31], "confirmar": "Massa mais firme – divisora rendeu mais" } ],
+      "tr": { "modo": "nao_aplica" } },
+    { "nome": "Modelagem", "op": "1", "postos": "1", "qtd": "20", "disp": "90", "est": "300",
+      "tarefas": [ { "nome": "Modelar e dispor na assadeira (20 pães)", "leituras": [40, 41, 42] } ],
+      "tr": { "modo": "informado", "valor": "15", "unidade": "min" } },
+    { "nome": "Fermentação", "op": "1", "postos": "8", "qtd": "400", "disp": "98", "est": "400",
+      "tarefas": [ { "nome": "Fermentar carrinho de 400 pães", "leituras": [5400, 5520, 5460] } ], "tr": { "modo": "nao_aplica" } },
+    { "nome": "Forneamento", "op": "1", "postos": "2", "qtd": "240", "disp": "88", "est": "480",
+      "tarefas": [ { "nome": "Assar fornada de 240 pães", "leituras": [1020, 1050, 1260, 1035], "descartar": { "leitura": 3, "motivo": "Porta aberta para inspeção da cor" } } ],
+      "tr": { "modo": "informado", "valor": "0,75", "unidade": "h" } },
+    { "nome": "Embalagem", "op": "2", "postos": "2", "qtd": "10", "disp": "95", "est": "1200",
+      "tarefas": [ { "nome": "Contar e ensacar 10 pães", "leituras": [18, 19, 18] },
+                   { "nome": "Fechar e etiquetar o saco", "leituras": [6, 6, 7] } ],
+      "tr": { "modo": "nao_aplica" } }
+  ]
+}
