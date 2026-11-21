@@ -176,6 +176,142 @@ function preencherDesenho(doc, mapa, mfv) {
   }
 }
 
+// --- Mapa compactado -------------------------------------------------------
+// Com menos de 12 processos, as colunas dos blocos não usados ficam ocultas e a Expedição
+// encosta no último processo. O fluxo superior (fornecedor, PCP, cliente, setas) é
+// redistribuído proporcionalmente na nova largura; cada seta da programação é refeita entre
+// o PCP (nova posição) e o seu processo; setas para blocos vazios saem.
+const LINHA_FIM_FLUXO_SUPERIOR = 32;   // (0-based) daqui para baixo: ícones dos blocos e gráfico
+const ALTURA_SETA_PROGRAMACAO = 1500000; // EMU: setas da programação descem do PCP até a linha dos processos
+// Compressão mínima do fluxo superior: abaixo disso as caixas (fornecedor, PCP, cliente) se sobrepõem.
+// Com poucos processos, ficam visíveis os blocos vazios necessários para respeitar esse limite.
+const FATOR_MINIMO = 0.55;
+
+const emuColuna = (larg) => Math.trunc(((256 * larg + Math.trunc(128 / 7)) / 256) * 7) * 9525;
+
+function filho(el, ns, nome) {
+  for (let c = el.firstChild; c; c = c.nextSibling) if (c.nodeType === 1 && c.namespaceURI === ns && c.localName === nome) return c;
+  return null;
+}
+function filhos(el, ns, nome) {
+  const out = [];
+  for (let c = el.firstChild; c; c = c.nextSibling) if (c.nodeType === 1 && c.namespaceURI === ns && c.localName === nome) out.push(c);
+  return out;
+}
+const xfrmDe = (forma) => {
+  const pr = filho(forma, NS_XDR, 'grpSpPr') || filho(forma, NS_XDR, 'spPr');
+  return pr && filho(pr, NS_A, 'xfrm');
+};
+function topo(anc) {
+  for (let c = anc.firstChild; c; c = c.nextSibling) if (c.nodeType === 1 && ['grpSp', 'sp', 'cxnSp', 'pic'].includes(c.localName)) return c;
+  return null;
+}
+function temTexto(anc) {
+  const ts = anc.getElementsByTagNameNS(NS_A, 't');
+  for (let i = 0; i < ts.length; i++) if ((ts[i].textContent || '').trim()) return true;
+  return false;
+}
+function soLinhas(anc) {
+  return anc.getElementsByTagNameNS(NS_XDR, 'cxnSp').length > 0 &&
+    !anc.getElementsByTagNameNS(NS_XDR, 'sp').length && !anc.getElementsByTagNameNS(NS_XDR, 'pic').length;
+}
+// Espelhamento horizontal efetivo da linha (XOR de flipH/flipV do grupo e da linha).
+function espelhada(anc) {
+  let v = false;
+  const xs = anc.getElementsByTagNameNS(NS_A, 'xfrm');
+  for (let i = 0; i < xs.length; i++) {
+    if (xs[i].getAttribute('flipH') === '1') v = !v;
+    if (xs[i].getAttribute('flipV') === '1') v = !v;
+  }
+  return v;
+}
+
+export function compactarMapa(abaDoc, desDoc, mapa, n) {
+  const total = mapa.processos.length;
+  if (!n || n >= total) return;
+  const sfp = abaDoc.getElementsByTagNameNS(NS_M, 'sheetFormatPr')[0];
+  const padrao = Number(sfp?.getAttribute('defaultColWidth') || 8.43);
+  const larg = {};
+  const cols = abaDoc.getElementsByTagNameNS(NS_M, 'col');
+  for (let i = 0; i < cols.length; i++) {
+    const c = cols[i];
+    for (let j = Number(c.getAttribute('min')); j <= Number(c.getAttribute('max')); j++) larg[j] = Number(c.getAttribute('width'));
+  }
+  const w = (j) => emuColuna(larg[j] ?? padrao);
+  const x = (col1) => { let s = 0; for (let j = 1; j < col1; j++) s += w(j); return s; };
+  const c1 = mapa.processos[total - 1].colunas[1];
+  const xVazio = x(mapa.processos[n].colunas[0]);        // início do primeiro bloco não usado
+
+  const raiz = desDoc.documentElement;
+  const itens = [];
+  for (let anc = raiz.firstChild; anc; anc = anc.nextSibling) {
+    if (anc.nodeType !== 1 || anc.localName !== 'oneCellAnchor') continue;
+    const de = filho(anc, NS_XDR, 'from'), ext = filho(anc, NS_XDR, 'ext');
+    if (!de || !ext || Number(filho(de, NS_XDR, 'row').textContent) >= LINHA_FIM_FLUXO_SUPERIOR) continue;
+    const x0 = x(Number(filho(de, NS_XDR, 'col').textContent) + 1) + Number(filho(de, NS_XDR, 'colOff').textContent);
+    itens.push({ anc, de, ext, x0, cx: Number(ext.getAttribute('cx')), cy: Number(ext.getAttribute('cy')) });
+  }
+  if (!itens.length) return;
+  // fluxo superior: escala linear entre a borda esquerda e a direita do desenho
+  const xL = Math.min(...itens.map((i) => i.x0)), xR = Math.max(...itens.map((i) => i.x0 + i.cx));
+  const xb = x(c1 + 1);
+  const fator = (k) => (xR - (xb - x(mapa.processos[k].colunas[0])) - xL) / (xR - xL);
+  let k = n;                                              // primeiro bloco a ocultar
+  while (k < total && fator(k) < FATOR_MINIMO) k++;
+  if (k >= total) return;
+  const c0 = mapa.processos[k].colunas[0];
+  const oculta = (j) => j >= c0 && j <= c1;
+  for (let i = 0; i < cols.length; i++) {
+    if (Number(cols[i].getAttribute('min')) >= c0 && Number(cols[i].getAttribute('max')) <= c1) cols[i].setAttribute('hidden', '1');
+  }
+  const xa = x(c0), ocultoEmu = xb - xa, f = fator(k);
+  // posição antiga → nova, para o que está preso às células; null = bloco não usado
+  const peca = (v) => (v >= xVazio && v < xb ? null : v < xa ? v : v - ocultoEmu);
+  const lin = (v) => xL + (v - xL) * f;
+
+  // nova posição absoluta (já sem as colunas ocultas) → coluna visível + deslocamento
+  const posicionar = (it, novoX0, novoCx) => {
+    let acum = 0, col = 1;
+    for (;; col++) {
+      const lw = oculta(col) ? 0 : w(col);
+      if (lw > 0 && acum + lw > novoX0) break;
+      acum += lw;
+      if (col > 400) break;
+    }
+    filho(it.de, NS_XDR, 'col').textContent = String(col - 1);
+    filho(it.de, NS_XDR, 'colOff').textContent = String(Math.max(0, Math.round(novoX0 - acum)));
+    const cx = Math.max(0, Math.round(novoCx));
+    it.ext.setAttribute('cx', String(cx));
+    const xf = xfrmDe(topo(it.anc));
+    const e = xf && filho(xf, NS_A, 'ext');
+    if (e) e.setAttribute('cx', String(cx));
+  };
+
+  for (const it of itens) {
+    const { anc, x0, cx, cy } = it;
+    if (soLinhas(anc) && cy > ALTURA_SETA_PROGRAMACAO) {
+      // seta da programação: ponta de cima no PCP (escala), ponta de baixo no processo (célula)
+      const esp = espelhada(anc);
+      const cima = esp ? x0 + cx : x0, baixo = esp ? x0 : x0 + cx;
+      const baixoNovo = peca(baixo);
+      if (baixoNovo === null) { raiz.removeChild(anc); continue; }     // apontava para bloco vazio
+      const cimaNovo = lin(cima);
+      posicionar(it, Math.min(cimaNovo, baixoNovo), Math.abs(baixoNovo - cimaNovo));
+      if ((cimaNovo > baixoNovo) !== esp) {                              // inverteu o sentido: espelha
+        const xf = xfrmDe(topo(anc));
+        if (xf) xf.setAttribute('flipH', xf.getAttribute('flipH') === '1' ? '0' : '1');
+      }
+    } else if (!temTexto(anc) && !anc.getElementsByTagNameNS(NS_XDR, 'pic').length) {
+      posicionar(it, lin(x0), cx * f);                                    // setas do fluxo de informação
+    } else if (anc.getElementsByTagNameNS(NS_XDR, 'cNvPr')[0]?.getAttribute('name') === 'MFV_PROG_PRODUCAO') {
+      posicionar(it, lin(x0), cx * f);                                    // barra da programação acompanha
+    } else {
+      const centro = lin(x0 + cx / 2);                                    // caixas e ícones: mantêm o tamanho
+      posicionar(it, Math.max(0, centro - cx / 2), cx);
+    }
+  }
+}
+
 const fmt = (v, d = 2) => (v === null || v === undefined ? '' : Number(v.toFixed(d)));
 
 function linhasCronoanalise(mfv) {
@@ -264,10 +400,10 @@ export async function gerarPlanilha(JSZip, modeloBuf, mapa, mfv, xmlApi = global
 
   const abaDoc = await parse(mapa.aba);
   preencherAba(new Aba(abaDoc), mapa, mfv);
-  zip.file(mapa.aba, ser(abaDoc));
-
   const desDoc = await parse(mapa.desenho);
   preencherDesenho(desDoc, mapa, mfv);
+  compactarMapa(abaDoc, desDoc, mapa, mfv.processos.length);
+  zip.file(mapa.aba, ser(abaDoc));
   zip.file(mapa.desenho, ser(desDoc));
 
   // Gráfico de balanceamento só com os processos cadastrados (sem barras vazias nem Takt caindo a zero).

@@ -115,3 +115,78 @@ test('CRONOANÁLISE com colunas largas o bastante para os textos', async () => {
   cab.forEach((titulo, i) => assert.ok((larg[i + 1] || 0) >= Math.min(titulo.length + 2, 34), `coluna ${i + 1} (${titulo}) estreita: ${larg[i + 1]}`));
   assert.ok(larg[cab.indexOf('Descartes (motivo)') + 1] >= 30);
 });
+
+// --- mapa compactado: blocos não usados ocultos, desenho acompanha
+function geometria(aba) {
+  const w = {};
+  for (const m of aba.matchAll(/<col min="(\d+)" max="(\d+)"([^>]*)\/>/g)) {
+    const larg = Number(m[3].match(/width="([\d.]+)"/)[1]);
+    for (let i = Number(m[1]); i <= Number(m[2]); i++) w[i] = { larg, oculta: / hidden="1"/.test(m[3]) };
+  }
+  const emu = (c) => Math.trunc(((256 * c + Math.trunc(128 / 7)) / 256) * 7) * 9525;
+  const x = (col1) => { let s = 0; for (let i = 1; i < col1; i++) s += emu((w[i] || { larg: 14.42578125 }).larg); return s; };
+  return { w, x };
+}
+function ancorasTopo(desenho) {
+  return [...desenho.matchAll(/<xdr:oneCellAnchor>([\s\S]*?)<\/xdr:oneCellAnchor>/g)].map((m) => {
+    const a = m[1];
+    return { col: Number(a.match(/<xdr:col>(\d+)</)[1]), off: Number(a.match(/<xdr:colOff>(-?\d+)</)[1]),
+      row: Number(a.match(/<xdr:row>(\d+)</)[1]), cx: Number(a.match(/<xdr:ext cx="(\d+)"/)[1]) };
+  }).filter((a) => a.row < 32);
+}
+
+test('mapa compactado: colunas dos blocos não usados ficam ocultas', async () => {
+  const { aba } = await gerar('mfv_3proc');
+  const { w } = geometria(aba);
+  // 3 processos: o fluxo superior comprimiria demais (fator 0,36 < 0,55), então ficam visíveis
+  // os blocos vazios 4–6 e oculta-se a partir do 7º (fator 0,57)
+  const c0 = mapa.processos[6].colunas[0], c1 = mapa.processos[11].colunas[1];
+  for (let i = 1; i <= 120; i++) if (w[i]) assert.equal(w[i].oculta, i >= c0 && i <= c1, `coluna ${i}`);
+});
+
+test('mapa compactado: com 6 processos a expedição encosta no último processo', async () => {
+  const m = fx('mfv_exemplo'); m.processos = m.processos.slice(0, 6);
+  const bytes = await gerarPlanilha(JSZip, modelo, mapa, m, xmlApi);
+  const aba = await (await JSZip.loadAsync(bytes)).file('xl/worksheets/sheet1.xml').async('string');
+  const { w } = geometria(aba);
+  const c0 = mapa.processos[6].colunas[0], c1 = mapa.processos[11].colunas[1];
+  for (let i = 1; i <= 120; i++) if (w[i]) assert.equal(w[i].oculta, i >= c0 && i <= c1, `coluna ${i}`);
+});
+
+test('mapa compactado: nenhuma forma do fluxo superior fica ancorada em coluna oculta', async () => {
+  const { aba, desenho } = await gerar('mfv_3proc');
+  const { w } = geometria(aba);
+  for (const a of ancorasTopo(desenho)) assert.ok(!w[a.col + 1]?.oculta, `forma ancorada na coluna oculta ${a.col + 1}`);
+});
+
+// setas só de linha no fluxo superior = setas da programação (8 para os blocos A–H + 1 para a expedição)
+const setasProgramacao = (desenho) => [...desenho.matchAll(/<xdr:oneCellAnchor>([\s\S]*?)<\/xdr:oneCellAnchor>/g)]
+  .map((m) => m[1]).filter((a) => Number(a.match(/<xdr:row>(\d+)</)[1]) < 32 && /cxnSp/.test(a) && !/<xdr:sp[ >]/.test(a) && !/<xdr:pic[ >]/.test(a));
+
+test('mapa compactado: setas da programação só para os processos cadastrados + expedição', async () => {
+  assert.equal(setasProgramacao((await gerar('mfv_exemplo')).desenho).length, 9);
+  assert.equal(setasProgramacao((await gerar('mfv_3proc')).desenho).length, 4);
+});
+
+test('mapa compactado: fluxo superior proporcional, sem o cliente sobre o PCP', async () => {
+  const { aba, desenho } = await gerar('mfv_3proc');
+  const { w, x } = geometria(aba);
+  const xv = (col1) => { let s = 0; for (let i = 1; i < col1; i++) if (!w[i]?.oculta) s += Math.trunc(((256 * (w[i]?.larg ?? 14.42578125) + 18) / 256) * 7) * 9525; return s; };
+  const pos = (nome) => {
+    const a = [...desenho.matchAll(/<xdr:oneCellAnchor>([\s\S]*?)<\/xdr:oneCellAnchor>/g)].map((m) => m[1]).find((t) => t.includes(`name="${nome}"`));
+    const x0 = xv(Number(a.match(/<xdr:col>(\d+)</)[1]) + 1) + Number(a.match(/<xdr:colOff>(-?\d+)</)[1]);
+    return [x0, x0 + Number(a.match(/<xdr:ext cx="(\d+)"/)[1])];
+  };
+  const [f0, f1] = pos('MFV_FORNECEDOR'), [p0, p1] = pos('MFV_PCP_SISTEMA'), [c0, c1] = pos('MFV_CLIENTE');
+  assert.ok(f1 <= p0 && p1 <= c0, `ordem fornecedor < PCP < cliente: ${[f0, f1, p0, p1, c0, c1]}`);
+  const exped = xv(mapa.processos[11].colunas[1] + 1);           // início da área da expedição/estoque final
+  assert.ok(c1 > exped, 'cliente continua do lado da expedição');
+});
+
+test('mapa com 12 processos não oculta nada', async () => {
+  const m = fx('mfv_exemplo');
+  while (m.processos.length < 12) m.processos.push(structuredClone(m.processos[0]));
+  const bytes = await gerarPlanilha(JSZip, modelo, mapa, m, xmlApi);
+  const aba = await (await JSZip.loadAsync(bytes)).file('xl/worksheets/sheet1.xml').async('string');
+  assert.doesNotMatch(aba, / hidden="1"/);
+});
