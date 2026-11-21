@@ -1,0 +1,43 @@
+{
+  "id": "alimentos_castanha_caju",
+  "titulo": "Alimentos – beneficiamento de castanha de caju",
+  "cabecalho": { "cliente": "Castanha Modelo (simulação)", "produto": "Amêndoa de castanha de caju (ACC)", "consultor": "Jandro Medeiros", "unidade": "kg" },
+  "producao": {
+    "demanda": "3.000", "dias": "22", "disp": "85",
+    "turnos": [
+      { "dias": ["Seg", "Ter", "Qua", "Qui", "Sex"], "entrada": "07:00", "pausaM": "00:10", "refeicao": "01:00", "pausaT": "00:10", "saida": "16:00" }
+    ]
+  },
+  "fluxos": {
+    "Fornecedor / matéria-prima": "Produtores e atravessadores – castanha in natura",
+    "Frequência de entrega do fornecedor": "Safra",
+    "Pedido ao fornecedor": "Compra na safra (à vista)",
+    "Previsão enviada ao fornecedor": "Sem previsão",
+    "Sistema do PCP": "Planilha Excel",
+    "Cliente / canal": "Exportador e atacado (CE/SP)",
+    "Previsão recebida do cliente": "Contrato semestral",
+    "Pedidos do cliente": "Pedido mensal (e-mail)",
+    "Frequência de entrega ao cliente": "Quinzenal",
+    "Programação para a produção": "Programação semanal",
+    "Programação para a expedição": "Lista de embarque"
+  },
+  "estoque_final": "600",
+  "processos": [
+    { "nome": "Autoclave", "op": "1", "postos": "1", "qtd": "110", "disp": "90", "est": "9000",
+      "tarefas": [ { "nome": "Autoclavar batelada (500 kg castanha)", "leituras": [2100, 2160, 2130] } ], "tr": { "modo": "nao_aplica" } },
+    { "nome": "Decorticação", "op": "10", "postos": "10", "qtd": "0,22", "disp": "88", "est": "110",
+      "tarefas": [ { "nome": "Cortar 1 kg de castanha", "leituras": [90, 94, 135, 92], "descartar": { "leitura": 3, "motivo": "Castanha travou na lâmina" } } ],
+      "tr": { "modo": "informado", "valor": "15", "unidade": "min" } },
+    { "nome": "Estufagem", "op": "1", "postos": "1", "qtd": "400", "disp": "95", "est": "300",
+      "tarefas": [ { "nome": "Secar carga de 400 kg na estufa", "leituras": [21600, 21900, 21780] } ], "tr": { "modo": "nao_aplica" } },
+    { "nome": "Despeliculagem", "op": "13", "postos": "13", "qtd": "0,5", "disp": "92", "est": "450",
+      "tarefas": [ { "nome": "Despelicular 500 g de amêndoa", "leituras": [1200, 1260, 1230] } ], "tr": { "modo": "nao_aplica" } },
+    { "nome": "Classificação", "op": "6", "postos": "6", "qtd": "1", "disp": "95", "est": "120",
+      "tarefas": [ { "nome": "Classificar 1 kg por tipo (W1, W2, bandas)", "leituras": [300, 310, 215], "confirmar": "Lote com amêndoas uniformes" } ],
+      "tr": { "modo": "nao_aplica" } },
+    { "nome": "Embalagem a vácuo", "op": "2", "postos": "2", "qtd": "1", "disp": "90", "est": "200",
+      "tarefas": [ { "nome": "Pesar e encher saco de 1 kg", "leituras": [35, 36, 35] },
+                   { "nome": "Selar a vácuo", "leituras": [25, 26, 25] } ],
+      "tr": { "modo": "cronometrado", "leituras": [420, 480, 450], "descricao": "Troca de bobina e formato do saco" } }
+  ]
+}
