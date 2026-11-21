@@ -1,4 +1,5 @@
-import { campo, ligar } from '../ui.js';
+import { campo, ligar, dicaMapa } from '../ui.js';
+import { limiteDoCampo } from '../abreviar.js';
 
 const CAMPOS = [
   ['fornecedor', 'Fornecedor / matéria-prima', 'Ex.: Fornecedores de fardos de fibras'],
@@ -20,4 +21,5 @@ export default function fluxos(el, ctx) {
   el.innerHTML = `<div class="cartao"><p class="sutil">Campo em branco fica em branco no mapa.</p>
     ${CAMPOS.map(([k, r, d]) => campo(r, f[k], { id: `f-${k}`, attrs: `placeholder="${d}"` })).join('')}</div>`;
   ligar(el, f, Object.fromEntries(CAMPOS.map(([k]) => [`f-${k}`, { prop: k }])), ctx.salvar);
+  for (const [k] of CAMPOS) dicaMapa(el, `f-${k}`, limiteDoCampo(k));
 }

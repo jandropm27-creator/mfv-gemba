@@ -5,21 +5,29 @@
 //      LOCAL=1 → usa a versão local do app (app/) em vez do site publicado
 import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
 import { chromium, devices, servir } from '../../tests/e2e/apoio.mjs';
+import { abreviar, LIMITE_MAPA, limiteDoCampo } from '../../app/js/abreviar.js';
 
 const [, , arqCenario, OUT] = process.argv;
 const C = JSON.parse(readFileSync(arqCenario, 'utf8'));
 
-// Textos que precisam caber nas formas do mapa: se não couberem, use abreviação no cenário.
-// Caminhões: ~8 caracteres por linha, 2 linhas. Caixa do processo: ~22 caracteres.
-const LIMITES = { caminhaoPalavra: 8, caminhaoTotal: 18, processo: 22 };
-const problemas = [];
-for (const campo of ['Frequência de entrega do fornecedor', 'Frequência de entrega ao cliente']) {
-  const t = C.fluxos[campo] || '';
-  const longa = t.split(/\s+/).find((w) => w.length > LIMITES.caminhaoPalavra);
-  if (longa || t.length > LIMITES.caminhaoTotal) problemas.push(`caminhão “${campo}”: “${t}” — abrevie (palavras até ${LIMITES.caminhaoPalavra} letras, total até ${LIMITES.caminhaoTotal})`);
+// Textos longos: o app abrevia automaticamente no mapa (limite 22; fábricas e barra da programação 45).
+// Aqui só listamos o que vai ser abreviado, para constar no relatório.
+const CAMPO_FLUXO = {
+  'Fornecedor / matéria-prima': 'fornecedor', 'Frequência de entrega do fornecedor': 'entregaFornecedor',
+  'Pedido ao fornecedor': 'pedidoFornecedor', 'Previsão enviada ao fornecedor': 'previsaoFornecedor',
+  'Sistema do PCP': 'pcpSistema', 'Cliente / canal': 'cliente', 'Previsão recebida do cliente': 'previsaoCliente',
+  'Pedidos do cliente': 'pedidoCliente', 'Frequência de entrega ao cliente': 'entregaCliente',
+  'Programação para a produção': 'progProducao', 'Programação para a expedição': 'progExpedicao' };
+const abreviacoes = [];
+for (const [rot, v] of Object.entries(C.fluxos)) {
+  const a = abreviar(v, limiteDoCampo(CAMPO_FLUXO[rot]));
+  if (a !== v) abreviacoes.push({ onde: rot, de: v, para: a });
 }
-for (const p of C.processos) if (p.nome.length > LIMITES.processo) problemas.push(`processo “${p.nome}” — abrevie (até ${LIMITES.processo} caracteres)`);
-if (problemas.length) { console.error('Textos grandes demais para o mapa:\n- ' + problemas.join('\n- ')); process.exit(2); }
+for (const p of C.processos) {
+  const a = abreviar(p.nome, LIMITE_MAPA);
+  if (a !== p.nome) abreviacoes.push({ onde: 'Nome do processo', de: p.nome, para: a });
+}
+for (const x of abreviacoes) console.log(`abreviado no mapa – ${x.onde}: “${x.de}” → “${x.para}”`);
 
 mkdirSync(OUT, { recursive: true });
 const SRV = process.env.LOCAL ? await servir() : null;
@@ -175,6 +183,6 @@ await foto('Gerar planilha', 'Gera o .xlsx e compartilha (WhatsApp, e-mail, Driv
 const [dl] = await Promise.all([page.waitForEvent('download'), page.getByRole('button', { name: /Gerar/ }).click()]);
 const nome = dl.suggestedFilename();
 await dl.saveAs(`${OUT}/${nome}`);
-writeFileSync(`${OUT}/legendas.json`, JSON.stringify({ cenario: C, planilha: nome, legendas }, null, 1));
+writeFileSync(`${OUT}/legendas.json`, JSON.stringify({ cenario: C, planilha: nome, legendas, abreviacoes }, null, 1));
 console.log('planilha:', nome, '| telas:', n);
 await nav.close(); await SRV?.fechar();

@@ -1,12 +1,13 @@
 // Gerado por tools/gerar_sw.py — não editar à mão.
 // Guarda todos os arquivos do app para funcionar sem internet; a VERSAO muda quando qualquer arquivo muda.
-const VERSAO = 'mfv-gemba-1ff09aed279f';
+const VERSAO = 'mfv-gemba-3caea513e040';
 const ARQUIVOS = [
   './',
   './app.css',
   './icones/icone-192.png',
   './icones/icone-512.png',
   './index.html',
+  './js/abreviar.js',
   './js/app.js',
   './js/calculo.js',
   './js/cronoanalise.js',

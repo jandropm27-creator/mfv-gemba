@@ -48,7 +48,7 @@ test('exemplo: valores de entrada nas células do mapa', async () => {
 test('exemplo: textos das formas substituídos, nada do modelo original', async () => {
   const { desenho } = await gerar('mfv_exemplo');
   assert.ok(desenho.includes('Fornecedor Alfa de fibras'));
-  assert.ok(desenho.includes('Lista diária de entregas'));
+  assert.ok(desenho.includes('Lista diária entregas'));   // 24 caracteres → abreviado para caber em 22
   for (const t of ['Fardos', 'Distribuidores', 'MRP']) assert.ok(!desenho.includes(t), t);
 });
 
@@ -189,4 +189,24 @@ test('mapa com 12 processos não oculta nada', async () => {
   const bytes = await gerarPlanilha(JSZip, modelo, mapa, m, xmlApi);
   const aba = await (await JSZip.loadAsync(bytes)).file('xl/worksheets/sheet1.xml').async('string');
   assert.doesNotMatch(aba, / hidden="1"/);
+});
+
+test('textos longos são abreviados no mapa (limite 22) e mantidos completos na CRONOANÁLISE', async () => {
+  const m = fx('mfv_3proc');
+  m.processos[0].nome = 'Separação e etiquetagem de lotes';                  // 32 caracteres
+  m.fluxos.entregaCliente = 'Diária (caminhão refrigerado)';                // 29
+  m.fluxos.fornecedor = 'Produtores e atravessadores – castanha in natura'; // 48 (fábrica comporta mais)
+  const bytes = await gerarPlanilha(JSZip, modelo, mapa, m, xmlApi);
+  const z = await JSZip.loadAsync(bytes);
+  const aba = await z.file('xl/worksheets/sheet1.xml').async('string');
+  const desenho = await z.file('xl/drawings/drawing1.xml').async('string');
+  const crono = await z.file('xl/worksheets/sheet5.xml').async('string');
+  const nome = txt(aba, 'K33');
+  assert.ok(nome.length <= 22, nome);
+  assert.match(nome, /^Separ/);
+  assert.ok(crono.includes('Separação e etiquetagem de lotes'));
+  assert.ok(desenho.includes('Diária (cam. refrig.)'));
+  assert.ok(!desenho.includes('caminhão refrigerado'));
+  const forn = desenho.match(/name="MFV_FORNECEDOR"[\s\S]*?<a:t>([^<]*)<\/a:t>/)[1];
+  assert.ok(forn.length <= 45 && forn.length > 22, forn);
 });

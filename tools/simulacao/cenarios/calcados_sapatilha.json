@@ -1,0 +1,47 @@
+{
+  "id": "calcados_sapatilha",
+  "titulo": "Calçados – sapatilha feminina em laminado sintético",
+  "cabecalho": { "cliente": "Calçados Modelo (simulação)", "produto": "Sapatilha feminina – linha básica", "consultor": "Jandro Medeiros", "unidade": "par" },
+  "producao": {
+    "demanda": "15.000", "dias": "22", "disp": "88",
+    "turnos": [
+      { "dias": ["Seg", "Ter", "Qua", "Qui", "Sex"], "entrada": "07:00", "pausaM": "00:10", "refeicao": "01:00", "pausaT": "00:10", "saida": "17:00" }
+    ]
+  },
+  "fluxos": {
+    "Fornecedor / matéria-prima": "Fornecedores de laminado sintético e solados (RS/SP)",
+    "Frequência de entrega do fornecedor": "Quinzenal por transportadora",
+    "Pedido ao fornecedor": "Pedido mensal por e-mail",
+    "Previsão enviada ao fornecedor": "Previsão mensal",
+    "Sistema do PCP": "ERP + ficha técnica",
+    "Cliente / canal": "Lojistas e magazines do Nordeste",
+    "Previsão recebida do cliente": "Pedidos por coleção",
+    "Pedidos do cliente": "Pedidos semanais via representante comercial",
+    "Frequência de entrega ao cliente": "Semanal (frota própria)",
+    "Programação para a produção": "Programação semanal por coleção",
+    "Programação para a expedição": "Romaneio semanal"
+  },
+  "estoque_final": "3000",
+  "processos": [
+    { "nome": "Corte", "op": "2", "postos": "2", "qtd": "1", "disp": "92", "est": "12000",
+      "tarefas": [ { "nome": "Cortar cabedal e forro (par) no balancim", "leituras": [25, 26, 24] } ],
+      "tr": { "modo": "cronometrado", "leituras": [480, 540, 510], "descricao": "Troca de navalhas (modelo/numeração)" } },
+    { "nome": "Preparação do cabedal (chanfração e dublagem)", "op": "2", "postos": "2", "qtd": "1", "disp": "90", "est": "1500",
+      "tarefas": [ { "nome": "Chanfrar bordas", "leituras": [18, 19, 18] },
+                   { "nome": "Dublar forro", "leituras": [22, 23, 22] } ],
+      "tr": { "modo": "nao_aplica" } },
+    { "nome": "Costura do cabedal", "op": "4", "postos": "4", "qtd": "1", "disp": "88", "est": "800",
+      "tarefas": [ { "nome": "Costurar cabedal e forro", "leituras": [75, 77, 118, 76], "descartar": { "leitura": 3, "motivo": "Agulha quebrou – troca da agulha" } },
+                   { "nome": "Pregar enfeite", "leituras": [20, 21, 20] } ],
+      "tr": { "modo": "informado", "valor": "8", "unidade": "min" } },
+    { "nome": "Montagem", "op": "2", "postos": "2", "qtd": "1", "disp": "85", "est": "600",
+      "tarefas": [ { "nome": "Montar bico e calcanhar na forma", "leituras": [45, 46, 47] },
+                   { "nome": "Colar e prensar o solado", "leituras": [40, 41, 40] } ],
+      "tr": { "modo": "informado", "valor": "25", "unidade": "min" } },
+    { "nome": "Acabamento, limpeza e revisão final", "op": "2", "postos": "2", "qtd": "1", "disp": "95", "est": "300",
+      "tarefas": [ { "nome": "Limpar, pintar bordas e revisar", "leituras": [40, 41, 42] } ], "tr": { "modo": "nao_aplica" } },
+    { "nome": "Embalagem", "op": "1", "postos": "1", "qtd": "1", "disp": "97", "est": "250",
+      "tarefas": [ { "nome": "Encaixar papel e embalar o par", "leituras": [15, 16, 11], "confirmar": "Caixa já montada pelo fornecedor" } ],
+      "tr": { "modo": "nao_aplica" } }
+  ]
+}

@@ -1,5 +1,6 @@
 // Utilidades de interface.
 import { numero } from './unidades.js';
+import { abreviar } from './abreviar.js';
 
 export const h = (s) => String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 export const fmt = (v, casas = 2) => (v === null || v === undefined || Number.isNaN(v) ? '—' : Number(v).toLocaleString('pt-BR', { maximumFractionDigits: casas, minimumFractionDigits: casas }));
@@ -48,4 +49,20 @@ export function perguntar(titulo, { texto = '', campoRotulo = '', botoes = [] } 
     dlg.onclose = () => fim(null);
     if (!dlg.open) dlg.showModal();
   });
+}
+
+// Abaixo do campo, mostra como o texto vai sair no mapa quando passar do limite (abreviação automática).
+export function dicaMapa(raiz, id, limite) {
+  const el = raiz.querySelector(`#${id}`);
+  if (!el) return;
+  const dica = document.createElement('div');
+  dica.className = 'sutil dica-mapa';
+  el.insertAdjacentElement('afterend', dica);
+  const atualizar = () => {
+    const v = el.value.trim(), a = abreviar(v, limite);
+    dica.hidden = a === v;
+    dica.textContent = a === v ? '' : `No mapa: ${a}`;
+  };
+  el.addEventListener('input', atualizar);
+  atualizar();
 }

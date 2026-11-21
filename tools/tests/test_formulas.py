@@ -36,6 +36,15 @@ class TestModelo(unittest.TestCase):
         self.assertIn("MFV_ESTOQUE_FINAL", nomes)
         self.assertIn(b"CONTROLE DE PRODU", self.p[DESENHO])
 
+    def test_caminhoes_comportam_22_caracteres(self):
+        """Fonte 7 pt e margens internas pequenas: ~11 caracteres por linha, 2 linhas."""
+        import re
+        d = self.p[DESENHO].decode("utf-8")
+        for nome in ("MFV_ENTREGA_FORNECEDOR", "MFV_ENTREGA_CLIENTE"):
+            i = d.index(f'name="{nome}"'); j = d.index("</xdr:sp>", i); sp = d[i:j]
+            self.assertEqual(set(re.findall(r'sz="(\d+)"', sp)), {"700"}, nome)
+            self.assertIn('lIns="18000"', sp); self.assertIn('rIns="18000"', sp)
+
     def test_sem_texto_do_exemplo(self):
         d = self.p[DESENHO].decode("utf-8")
         for t in ("Fardos", "Distribuidores", "MRP", "semanal", "Quarta", "Previs", "Pedidos", "1 x"):

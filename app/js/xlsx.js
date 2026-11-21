@@ -3,6 +3,7 @@
 import { tcEfetivoMin, tcCronometradoMin, trMin } from './calculo.js';
 import { estatisticas } from './cronoanalise.js';
 import { hhmmParaMin, numero } from './unidades.js';
+import { abreviar, LIMITE_MAPA, limiteDoCampo } from './abreviar.js';
 
 const NS_M = 'http://schemas.openxmlformats.org/spreadsheetml/2006/main';
 const NS_XDR = 'http://schemas.openxmlformats.org/drawingml/2006/spreadsheetDrawing';
@@ -154,7 +155,7 @@ function preencherAba(aba, mapa, mfv) {
       }
       return;
     }
-    aba.texto(cel.nome, p.nome);
+    aba.texto(cel.nome, abreviar(p.nome, LIMITE_MAPA));      // nome completo fica na CRONOANÁLISE
     aba.numero(cel.operadores, numero(p.operadores));
     aba.numero(cel.tc, tcEfetivoMin(p));
     aba.numero(cel.tr, trMin(p));
@@ -166,7 +167,9 @@ function preencherAba(aba, mapa, mfv) {
 }
 
 function preencherDesenho(doc, mapa, mfv) {
-  for (const [campo, nome] of Object.entries(mapa.formas)) definirTextoForma(doc, nome, mfv.fluxos[campo]);
+  for (const [campo, nome] of Object.entries(mapa.formas)) {
+    definirTextoForma(doc, nome, abreviar(mfv.fluxos[campo], limiteDoCampo(campo)));
+  }
   const n = mfv.processos.length;
   for (let k = n + 1; k <= mapa.processos.length; k++) {
     for (const modelo of Object.values(mapa.imagens_bloco)) {

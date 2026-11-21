@@ -1,7 +1,8 @@
 import { novaTarefa } from '../modelo.js';
 import { tcCronometradoMin, tcEfetivoMin, trMin } from '../calculo.js';
 import { estatisticas } from '../cronoanalise.js';
-import { campo, ligar, numTxt, fmt, h } from '../ui.js';
+import { campo, ligar, numTxt, fmt, h, dicaMapa } from '../ui.js';
+import { LIMITE_MAPA } from '../abreviar.js';
 
 const TR_TXT = { cronometrado: 'cronometrado', informado: 'informado pelo cliente', nao_aplica: 'não se aplica' };
 
@@ -48,6 +49,7 @@ export default function processo(el, ctx) {
     qtd: { prop: 'qtdPorCiclo', tipo: 'num' }, unciclo: { prop: 'unidadeCiclo' }, conv: { prop: 'conversao', tipo: 'num' },
     disp: { prop: 'disponibilidade', tipo: 'num' }, est: { prop: 'estoqueAntes', tipo: 'num' },
   }, ctx.salvar, () => { if (!precisaConversao()) p.conversao = 1; resumo(); ctx.titulo(p.nome); });
+  dicaMapa(el, 'nome', LIMITE_MAPA);
   el.querySelector('#add-tarefa').addEventListener('click', async () => {
     const nome = el.querySelector('#nova-tarefa').value.trim();
     if (!nome) return;

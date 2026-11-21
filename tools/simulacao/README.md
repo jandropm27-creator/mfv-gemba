@@ -8,13 +8,16 @@ node tools/simulacao/simular.mjs tools/simulacao/cenarios/<cenario>.json <pasta>
 python3 tools/simulacao/relatorio.py <pasta>
 ```
 
-## Regra de textos no mapa (abreviar quando não couber)
+## Textos no mapa: até 22 caracteres, abreviação automática acima disso
 
-As formas do mapa têm espaço limitado. Quando o texto não couber, **use abreviação** no cenário (e no Gemba):
+O app abrevia sozinho, ao gerar a planilha, os textos que vão para formas pequenas do mapa
+(nome do processo, caminhões, etiquetas de previsão/pedido/PCP, programação da expedição):
 
-| Onde | Limite | Exemplos de abreviação |
-|---|---|---|
-| Caminhões (frequência de entrega) | palavras até 8 letras, total até 18 | Quinzenal → **Quinz.**; Semanal (transportadora) → **Semanal**; Diária (refrigerado) → **Diária refrig.**; 2 vezes por semana → **2x sem.** |
-| Caixa do processo (nome) | até 22 caracteres | Pesagem de ingredientes → **Pesagem ingred.**; Passadoria e embalagem → **Passad. e embal.** |
+- até **22 caracteres**: o texto fica como está (caminhões com fonte 7 pt: ~11 caracteres por linha, 2 linhas);
+- acima disso: tira "de/do/da", usa abreviações usuais (Quinzenal → Quinz., refrigerado → refrig.,
+  ingredientes → ingred., embalagem → embal. …) e, se ainda não couber, encurta as palavras mais longas;
+- fábricas (fornecedor, cliente) e a barra da programação aceitam até 45 caracteres;
+- a aba CRONOANÁLISE mantém o nome completo do processo;
+- na tela do app, abaixo do campo, aparece "No mapa: …" quando o texto vai ser abreviado.
 
-O executor confere esses limites antes de rodar e aponta o campo a abreviar.
+O executor lista as abreviações feitas e o relatório as mostra.

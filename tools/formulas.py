@@ -35,6 +35,9 @@ FORMAS = [  # (campo em Mfv.fluxos, nome da forma, trecho do texto do exemplo)
 ]
 
 
+CAMINHOES = ("MFV_ENTREGA_FORNECEDOR", "MFV_ENTREGA_CLIENTE")
+
+
 def col_estoque(k): return 8 + 6 * k
 def col_nome(k): return 11 + 6 * k
 def col_valor(k): return 12 + 6 * k
@@ -187,6 +190,11 @@ def _desenho(p):
             if trecho in texto and nome not in achadas:
                 sp.find(f"{{{NS_XDR}}}nvSpPr/{{{NS_XDR}}}cNvPr").set("name", nome)
                 definir_texto(sp, "")
+                if nome in CAMINHOES:                      # ~11 caracteres por linha, 2 linhas (22)
+                    for el in sp.iter(f"{{{NS_A}}}rPr", f"{{{NS_A}}}endParaRPr", f"{{{NS_A}}}defRPr"):
+                        el.set("sz", "700")
+                    bp = sp.find(f"{{{NS_XDR}}}txBody/{{{NS_A}}}bodyPr")
+                    bp.set("lIns", "18000"); bp.set("rIns", "18000")
                 achadas[nome] = campo
                 break
     faltam = {n for _, n, _ in FORMAS} - set(achadas)

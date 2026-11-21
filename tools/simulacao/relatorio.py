@@ -149,6 +149,9 @@ def main(pasta):
         "",
         "Páginas seguintes: telas do celular passo a passo e a planilha gerada, como aparece no Excel.",
     ]
+    if meta.get("abreviacoes"):
+        linhas += ["", "Abreviação automática no mapa (limite 22 caracteres):"]
+        linhas += [f"  • {x['onde']}: “{x['de']}” → “{x['para']}”" for x in meta["abreviacoes"]]
     y = 520
     for l in linhas:
         for ll in (quebrar(d, l, FG, A4[0] - 320) if l else [""]):
