@@ -1,0 +1,44 @@
+{
+  "id": "metalmecanica_tarugos",
+  "titulo": "Metalmecânica – tarugos de aço para a indústria automotiva",
+  "cabecalho": { "cliente": "Metalúrgica Modelo (simulação)", "produto": "Tarugo SAE 1045 Ø50 × 120 mm", "consultor": "Jandro Medeiros", "unidade": "pç" },
+  "producao": {
+    "demanda": "20.000", "dias": "21", "disp": "88",
+    "turnos": [
+      { "dias": ["Seg", "Ter", "Qua", "Qui", "Sex"], "entrada": "06:00", "pausaM": "00:10", "refeicao": "01:00", "pausaT": "00:10", "saida": "15:48" }
+    ]
+  },
+  "fluxos": {
+    "Fornecedor / matéria-prima": "Usina siderúrgica – barras SAE 1045 laminadas",
+    "Frequência de entrega do fornecedor": "Quinzenal",
+    "Pedido ao fornecedor": "Pedido mensal por e-mail",
+    "Previsão enviada ao fornecedor": "Previsão trimestral",
+    "Sistema do PCP": "ERP",
+    "Cliente / canal": "Forjarias e sistemistas automotivos",
+    "Previsão recebida do cliente": "Programa 90 dias (EDI)",
+    "Pedidos do cliente": "Liberação semanal (EDI)",
+    "Frequência de entrega ao cliente": "Diária (milk run)",
+    "Programação para a produção": "Programação diária",
+    "Programação para a expedição": "Lista de embarque diária"
+  },
+  "estoque_final": "6000",
+  "processos": [
+    { "nome": "Corte", "op": "1", "postos": "2", "qtd": "1", "disp": "85", "est": "30000",
+      "tarefas": [ { "nome": "Cortar tarugo na serra fita", "leituras": [45, 47, 71, 44, 46], "descartar": { "leitura": 3, "motivo": "Lâmina travou – reinício do corte" } } ],
+      "tr": { "modo": "cronometrado", "leituras": [2100, 2280, 2040], "descricao": "Troca de bitola e ajuste do batente" } },
+    { "nome": "Faceamento e chanfro", "op": "2", "postos": "2", "qtd": "1", "disp": "75", "est": "4500",
+      "tarefas": [ { "nome": "Carregar e descarregar no torno", "leituras": [14, 15, 16] },
+                   { "nome": "Facear e chanfrar 2 lados (CNC)", "leituras": [46, 46, 47] } ],
+      "tr": { "modo": "informado", "valor": "1,5", "unidade": "h" } },
+    { "nome": "Rebarbação", "op": "1", "postos": "1", "qtd": "1", "disp": "95", "est": "2000",
+      "tarefas": [ { "nome": "Rebarbar arestas", "leituras": [15, 16, 15] } ], "tr": { "modo": "nao_aplica" } },
+    { "nome": "Inspeção dimensional", "op": "1", "postos": "1", "qtd": "1", "disp": "97", "est": "1200",
+      "tarefas": [ { "nome": "Medir Ø e comprimento", "leituras": [10, 11, 10] },
+                   { "nome": "Registrar no controle", "leituras": [6, 6, 4], "confirmar": "Registro em lote no tablet" } ],
+      "tr": { "modo": "nao_aplica" } },
+    { "nome": "Oleamento protetivo", "op": "1", "postos": "1", "qtd": "200", "disp": "90", "est": "1800",
+      "tarefas": [ { "nome": "Oleamento do cesto de 200 pç", "leituras": [1500, 1560, 1530] } ], "tr": { "modo": "nao_aplica" } },
+    { "nome": "Embalagem", "op": "1", "postos": "1", "qtd": "100", "disp": "98", "est": "800",
+      "tarefas": [ { "nome": "Montar caixa de 100 pç e etiquetar", "leituras": [360, 372, 355] } ], "tr": { "modo": "nao_aplica" } }
+  ]
+}
