@@ -87,6 +87,7 @@ def _formulas(a: Aba):
     a.f(E["DEMANDA_DIA"], 'IF(OR(DEMANDA="",DIAS_MES="",DIAS_MES=0),"",DEMANDA/DIAS_MES)')
     a.f(E["TAKT"], 'IF(OR(DEMANDA_DIA="",HORAS_DIA="",DISP_FAMILIA=""),"",HORAS_DIA*DISP_FAMILIA*60/DEMANDA_DIA)')
     a.f(E["UNID_TAKT"], 'IF($I$37="","min/unid","min/"&$I$37)')
+    a.f("CR52", 'IF($I$37="","unid/d",$I$37&"/d")')      # unidade da demanda diária segue o cabeçalho
     for r in LINHAS_TURNO:   # jornada com MOD(…;1): turno noturno atravessa a meia-noite
         a.f(f"CY{r}", f"MOD(CX{r}-CT{r},1)-SUM(CU{r},CV{r},CW{r})")
 

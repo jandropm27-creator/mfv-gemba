@@ -59,6 +59,7 @@ class TestModelo(unittest.TestCase):
         self.assertEqual(self.recalc["M37"], "min")
         self.assertEqual(self.recalc["AW37"], "min")
         self.assertEqual(self.recalc["CX52"], "min/kg")    # unidade do cabeçalho
+        self.assertEqual(self.recalc["CR52"], "kg/d")      # unidade da demanda diária
 
     def test_sem_metadados_pessoais(self):
         core = self.p["docProps/core.xml"].decode("utf-8")
